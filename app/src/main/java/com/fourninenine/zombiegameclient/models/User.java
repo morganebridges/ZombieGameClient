@@ -22,6 +22,4 @@ public class User extends SugarRecord{
         this.name = name;
     }
 
-
-
 }
