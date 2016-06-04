@@ -38,25 +38,4 @@ public class ExampleUnitTest {
 
 
 
-    @Test
-    public void testSugarORM() throws Exception {
-        User user = new User("myUserName");
-
-        System.out.println("User created");
-        System.out.println("User's name: " + user.getName());
-        user.save();
-        long id = user.getId();
-        System.out.println("User's ID");
-
-        //Null out user
-        user = null;
-        user = User.findById(User.class, id);
-        if(user != null){
-            System.out.println("Query for user produced user with name: " + user.getName());
-
-        }
-        assertEquals(user.getId().intValue(), id);
-
-
-    }
 }
