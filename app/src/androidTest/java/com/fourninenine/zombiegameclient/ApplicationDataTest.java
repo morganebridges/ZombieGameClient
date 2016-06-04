@@ -18,6 +18,7 @@ public class ApplicationDataTest extends ApplicationTestCase<MyApp> {
     public ApplicationDataTest() {
         super(MyApp.class);
     }
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         createApplication();
@@ -29,10 +30,8 @@ public class ApplicationDataTest extends ApplicationTestCase<MyApp> {
      * A simple series of operations using sugar ORM calls.
      */
     public void testPersistence(){
-        User user = new User("myUserName");
+        User user = new User("myUserName", 666);
 
-        System.out.println("User created");
-        System.out.println("User's name: " + user.getName());
         //Save to the database, generating a user id.
         user.save();
         long id = user.getId();

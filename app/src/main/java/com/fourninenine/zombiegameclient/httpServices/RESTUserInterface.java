@@ -18,4 +18,6 @@ public interface RESTUserInterface {
     @POST("user/new")
     Call<User> createUser(@Body User user);
 
+
+
 }

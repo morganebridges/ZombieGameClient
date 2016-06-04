@@ -46,7 +46,7 @@ public class HttpUserService implements RESTUserInterface {
         //asynchronously.
 
 
-        /*call.enqueue(new Callback<User>() {
+         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 System.out.println("SUccess!!");
@@ -60,19 +60,14 @@ public class HttpUserService implements RESTUserInterface {
                 throw new IllegalStateException("An error was encountered with the API call");
             }
         });
+
         System.out.println("Check for execution of call: " + call.isExecuted());
 
         System.out.println("CHeck for cancellation of call: " + call.isCanceled());
 
-        return call;*/
-
-        try {
-            Response<User> response = call.execute();
-            System.out.println(response);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         return call;
+
+
     }
 
     @Override

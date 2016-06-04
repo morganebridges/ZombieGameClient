@@ -28,11 +28,13 @@ public class ExampleUnitTest {
         System.out.println("API TEST");
         Map hashMap = new HashMap<String, String>();
         hashMap.put("gamerTag", "testTag");
-        User me = new User("me");
+        User me = new User("me", 123);
         HttpUserService requestService = new HttpUserService();
 
         Call<User> call = requestService.findUserByGamertag("testTag");
         System.out.println(call);
+
+
         //System.out.println(call.request());
     }
 
