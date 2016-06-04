@@ -1,5 +1,7 @@
 package com.fourninenine.zombiegameclient;
 
+import android.app.Application;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -33,6 +35,9 @@ public class ExampleUnitTest {
         System.out.println(call);
         //System.out.println(call.request());
     }
+
+
+
     @Test
     public void testSugarORM() throws Exception {
         User user = new User("myUserName");
