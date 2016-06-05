@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.fourninenine.zombiegameclient.models.User;
 import com.orm.SugarContext;
 
 public class LoginActivity extends AppCompatActivity {
@@ -51,5 +52,10 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+    public User login(){
+        User user = null;
+
+        return user;
     }
 }

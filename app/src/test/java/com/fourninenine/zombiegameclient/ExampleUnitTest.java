@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import retrofit2.Call;
+import retrofit2.Response;
 
 /**
  * To work on unit tests, switch the Test Artifact in the Build Variants view.
@@ -24,18 +25,22 @@ public class ExampleUnitTest {
         assertEquals(4, 2 + 2);
     }
     @Test
-    public void apiTest() throws Exception {
+    public void findUserByNameAsyncTest() throws Exception {
         System.out.println("API TEST");
-        Map hashMap = new HashMap<String, String>();
-        hashMap.put("gamerTag", "testTag");
         User me = new User("me", 123);
-        HttpUserService requestService = new HttpUserService();
+        HttpUserService requestService = HttpUserService.instance();
 
-        Call<User> call = requestService.findUserByGamertag("testTag");
-        System.out.println(call);
-
+        Call<User> call = requestService.findUserByName("testTag");
 
         //System.out.println(call.request());
+    }
+    @Test
+    public void findUserByNameSyncTest() throws Exception {
+        HttpUserService requestService = HttpUserService.instance();
+        Response<User> response =  requestService.findUserByNameSynchronous("testTag");
+
+        System.out.println(response.body());
+
     }
 
 

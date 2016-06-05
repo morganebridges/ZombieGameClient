@@ -13,10 +13,13 @@ import retrofit2.http.POST;
  */
 public interface RESTUserInterface {
     @POST("getuser")
-    Call<User> findUserByGamertag(@Body String gamerTag);
+    Call<User> findUserByName(@Body String gamerTag);
 
     @POST("user/new")
     Call<User> createUser(@Body User user);
+
+    @POST("getuser")
+    Response<User> findUserByNameSynchronous(@Body String name);
 
 
 

@@ -19,12 +19,11 @@ import retrofit2.http.POST;
  */
 public class HttpUserService implements RESTUserInterface {
     public static final String BASE_URL = "http://52.39.83.97:8080";
-    OkHttpClient client = new OkHttpClient();
-    User user;
-    Map<String, String> keyMap;
-    Retrofit retrofit;
-
-    public HttpUserService() {
+    private static HttpUserService instance;
+    private OkHttpClient client = new OkHttpClient();
+    private Retrofit retrofit;
+    private RESTUserInterface apiService = retrofit.create(RESTUserInterface.class);
+    private HttpUserService() {
         retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -33,19 +32,24 @@ public class HttpUserService implements RESTUserInterface {
 
     }
     /*
+        Implement the singleton pattern.
+     */
+    public static HttpUserService instance(){
+        if(instance != null)
+            return instance;
+        return new HttpUserService();
+    }
+    /*
         This method current executes this request synchronously
      */
     @Override
-    @POST
-    public Call<User> findUserByGamertag(@Body String gamerTag) {
-        RESTUserInterface apiService = retrofit.create(RESTUserInterface.class);
+    public Call<User> findUserByName(@Body String gamerTag) {
+
         User user = null;
-        Call<User> call = apiService.findUserByGamertag("testTag");
+        Call<User> call = apiService.findUserByName("testTag");
 
         //The enqueue method is commented out for purposes of unit testing, since it dispatches an execution call
-        //asynchronously.
-
-
+        //asynchronously
          call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
@@ -68,6 +72,11 @@ public class HttpUserService implements RESTUserInterface {
         return call;
 
 
+    }
+    @Override
+    public Response<User> findUserByNameSynchronous(String name){
+        Response<User> response = apiService.findUserByNameSynchronous(name);
+        return response;
     }
 
     @Override
