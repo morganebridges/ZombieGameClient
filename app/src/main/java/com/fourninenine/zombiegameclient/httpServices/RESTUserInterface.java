@@ -18,8 +18,8 @@ public interface RESTUserInterface {
     @POST("user/new")
     Call<User> createUser(@Body User user);
 
-    @POST("getuser")
-    Response<User> findUserByNameSynchronous(@Body String name);
+    /*@POST("getuser")
+    Response<User> findUserByNameSynchronous(@Body String name);*/
 
 
 

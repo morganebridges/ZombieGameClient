@@ -19,25 +19,19 @@ import retrofit2.http.POST;
  */
 public class HttpUserService implements RESTUserInterface {
     public static final String BASE_URL = "http://52.39.83.97:8080";
-    private static HttpUserService instance;
-    private OkHttpClient client = new OkHttpClient();
-    private Retrofit retrofit;
-    private RESTUserInterface apiService = retrofit.create(RESTUserInterface.class);
-    private HttpUserService() {
+
+    OkHttpClient client = new OkHttpClient();
+    User user;
+    Map<String, String> keyMap;
+    Retrofit retrofit;
+    RESTUserInterface apiService = retrofit.create(RESTUserInterface.class);
+    public HttpUserService() {
         retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
 
-    }
-    /*
-        Implement the singleton pattern.
-     */
-    public static HttpUserService instance(){
-        if(instance != null)
-            return instance;
-        return new HttpUserService();
     }
     /*
         This method current executes this request synchronously
@@ -49,7 +43,9 @@ public class HttpUserService implements RESTUserInterface {
         Call<User> call = apiService.findUserByName("testTag");
 
         //The enqueue method is commented out for purposes of unit testing, since it dispatches an execution call
-        //asynchronously
+        //asynchronously.
+
+
          call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
@@ -73,11 +69,12 @@ public class HttpUserService implements RESTUserInterface {
 
 
     }
+    /*
     @Override
     public Response<User> findUserByNameSynchronous(String name){
         Response<User> response = apiService.findUserByNameSynchronous(name);
         return response;
-    }
+    }*/
 
     @Override
     public Call<User> createUser(@Body User user) {
