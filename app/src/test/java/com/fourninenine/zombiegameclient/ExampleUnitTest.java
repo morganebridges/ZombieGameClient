@@ -39,7 +39,6 @@ public class ExampleUnitTest {
     public void findUserByNameSyncTest() throws Exception {
         HttpUserService apiService = new HttpUserService();
         Response<User> response =  apiService.findUserByNameSynchronous("testTag");
-
         System.out.println(response.body());
 
     }

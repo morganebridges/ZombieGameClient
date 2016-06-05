@@ -18,20 +18,28 @@ import retrofit2.http.POST;
  * Created by morganebridges on 5/30/16.
  */
 public class HttpUserService implements RESTUserInterface {
-    public static final String BASE_URL = "http://52.39.83.97:8080";
+    private static HttpUserService instance;
 
-    OkHttpClient client = new OkHttpClient();
-    User user;
-    Map<String, String> keyMap;
-    Retrofit retrofit;
-    RESTUserInterface apiService = retrofit.create(RESTUserInterface.class);
+    public static final String BASE_URL = "http://52.39.83.97:8080";
+    private Retrofit retrofit;
+    private RESTUserInterface apiService;
+
     public HttpUserService() {
         retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-
+        apiService = retrofit.create(RESTUserInterface.class);
+    }
+    /*
+        Implement the singleton pattern.
+     */
+    public HttpUserService instance(){
+        if(instance != null)
+            return instance;
+        instance = new HttpUserService();
+        return instance;
     }
     /*
         This method current executes this request synchronously
@@ -69,12 +77,18 @@ public class HttpUserService implements RESTUserInterface {
 
 
     }
-    /*
+
     @Override
     public Response<User> findUserByNameSynchronous(String name){
-        Response<User> response = apiService.findUserByNameSynchronous(name);
+        Call<User> call = apiService.findUserByName(name);
+        Response<User> response = null;
+       try {
+            response = call.execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return response;
-    }*/
+    }
 
     @Override
     public Call<User> createUser(@Body User user) {
