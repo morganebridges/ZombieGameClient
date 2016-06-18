@@ -1,6 +1,7 @@
 package com.fourninenine.zombiegameclient;
 
 import android.app.Application;
+import android.content.Intent;
 
 import com.orm.SugarContext;
 
@@ -12,6 +13,9 @@ public class MyApp extends Application{
     public void onCreate(){
         super.onCreate();
         SugarContext.init(this);
+
+        Intent loginIntent = new Intent(this, LoginActivity.class);
+        startActivity(loginIntent);
     }
     @Override
     public void onTerminate(){

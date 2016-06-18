@@ -1,5 +1,6 @@
 package com.fourninenine.zombiegameclient;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -57,5 +58,9 @@ public class LoginActivity extends AppCompatActivity {
         User user = null;
 
         return user;
+    }
+    public void navigateMap(View view){
+        Intent mapIntent = new Intent(this, MainMapActivity.class);
+        startActivity(mapIntent);
     }
 }

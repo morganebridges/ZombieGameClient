@@ -1,18 +1,18 @@
-package com.fourninenine.zombiegameclient.httpServices;
+package com.fourninenine.zombiegameclient.httpServices.RESTServices;
 
+import com.fourninenine.zombiegameclient.httpServices.RESTInterfaces.RESTUserInterface;
 import com.fourninenine.zombiegameclient.models.User;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
-import java.util.Map;
 
-import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Body;
-import retrofit2.http.POST;
 
 /**
  * Created by morganebridges on 5/30/16.
@@ -60,6 +60,7 @@ public class HttpUserService implements RESTUserInterface {
                 System.out.println("SUccess!!");
                 int statusCode = response.code();
                 //user = response.body();
+
             }
 
             @Override
@@ -89,6 +90,7 @@ public class HttpUserService implements RESTUserInterface {
         }
         return response;
     }
+
 
     @Override
     public Call<User> createUser(@Body User user) {

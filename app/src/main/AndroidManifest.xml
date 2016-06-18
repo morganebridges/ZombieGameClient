@@ -54,7 +54,8 @@
 
         <activity
             android:name=".MainMapActivity"
-            android:label="@string/title_activity_main_map"></activity>
+            android:label="@string/title_activity_main_map"
+            />
     </application>
 
 </manifest>

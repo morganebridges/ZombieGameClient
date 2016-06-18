@@ -1,17 +1,11 @@
 package com.fourninenine.zombiegameclient;
 
-import android.app.Application;
-
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-import com.fourninenine.zombiegameclient.httpServices.HttpUserService;
+import com.fourninenine.zombiegameclient.httpServices.RESTServices.HttpUserService;
 import com.fourninenine.zombiegameclient.models.User;
-import com.orm.SugarContext;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Response;

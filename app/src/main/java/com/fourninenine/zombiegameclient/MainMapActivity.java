@@ -1,19 +1,26 @@
 package com.fourninenine.zombiegameclient;
 
+import android.location.Location;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
+import com.fourninenine.zombiegameclient.httpServices.RESTServices.HttpMapService;
+import com.fourninenine.zombiegameclient.httpServices.RESTServices.HttpUserService;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MainMapActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MainMapActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private GoogleMap mMap;
-
+    private GoogleApiClient mGoogleApiClient;
+    private Location mLastLocation;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,6 +29,15 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        // Create an instance of GoogleAPIClient.
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
     }
 
 
@@ -35,12 +51,49 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
      * installed Google Play services and returned to the app.
      */
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(GoogleMap googleMap) throws SecurityException{
         mMap = googleMap;
+        // Add a marker to my last location and center the camera.
+       // mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+       // LatLng lastLatLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+       // mMap.addMarker(new MarkerOptions().position(lastLatLng).title("My Last Location"));
+      //  mMap.moveCamera(CameraUpdateFactory.newLatLng(lastLatLng));
+        updateMap();
+        System.out.println("Past updating the map");
+    }
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+    @Override
+    public void onConnected(@Nullable Bundle bundle) throws SecurityException{
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+        if (mLastLocation != null) {
+           System.out.println("Location Found");
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+    @Override
+    protected void onStart(){
+        mGoogleApiClient.connect();
+        super.onStart();
+    }
+    @Override
+    protected void onStop(){
+        mGoogleApiClient.disconnect();
+        super.onStop();
+    }
+    private void updateMap(){
+        HttpMapService mapService = new HttpMapService(mMap);
+        System.out.println("Updating map");
+        LatLng position = new LatLng(95.2, 45.0);
+        mapService.updateMap(new LatLng(position.latitude, position.longitude));
     }
 }
