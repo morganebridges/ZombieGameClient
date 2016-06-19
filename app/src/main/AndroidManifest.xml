@@ -64,6 +64,13 @@
                 <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
         </service>
+        <service
+            android:name=".services.RegistrationIntentService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.SEND" />
+            </intent-filter>
+        </service>
 
         <activity
             android:name=".LoginActivity"

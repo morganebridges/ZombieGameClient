@@ -1,8 +1,13 @@
 package com.fourninenine.zombiegameclient.services;
 
+import android.content.Context;
+
+import com.fourninenine.zombiegameclient.GCMTestActivity;
+import com.fourninenine.zombiegameclient.MyApp;
 import com.fourninenine.zombiegameclient.R;
 import com.fourninenine.zombiegameclient.models.utilities.TokenItem;
 import com.fourninenine.zombiegameclient.models.utilities.TokenList;
+import com.fourninenine.zombiegameclient.services.activityHelpers.GCMHelper;
 import com.google.android.gms.iid.InstanceID;
 import com.google.android.gms.iid.InstanceIDListenerService;
 
@@ -17,7 +22,9 @@ public class MyInstanceIDService extends InstanceIDListenerService {
         // assuming you have defined TokenList as
         // some generalized store for your tokens
         TokenList tokenList = TokenList.Instance();
-        InstanceID iid = InstanceID.getInstance(this);
+        Context appContext = MyApp.getAppContext();
+        System.out.println("see application context");
+        InstanceID iid = InstanceID.getInstance(appContext);
         for(TokenItem tokenItem : tokenList.getMap()){
 
             try {
@@ -29,13 +36,14 @@ public class MyInstanceIDService extends InstanceIDListenerService {
         }
 
     }
-    public String getToken(){
-        InstanceID instanceID = InstanceID.getInstance(this);
+    /*public String generateToken(){
+
         String authorizedEntity =  R.string.PROJECT_ID + "";
         String scope = "GCM";
         String token1 = null;
+        GCMHelper helper = new GCMHelper(getApplicationContext());
         try {
-            token1 = instanceID.getToken(authorizedEntity, scope);
+            token1 = helper.
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -43,5 +51,5 @@ public class MyInstanceIDService extends InstanceIDListenerService {
             throw new IllegalStateException("Not the result we wanted.");
         }
         return token1;
-    }
+    }*/
 }

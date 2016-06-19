@@ -16,6 +16,8 @@ package com.fourninenine.zombiegameclient.services; /**
 import com.fourninenine.zombiegameclient.R;
 import com.fourninenine.zombiegameclient.models.User;
 import com.fourninenine.zombiegameclient.models.utilities.Globals;
+import com.fourninenine.zombiegameclient.models.utilities.TokenItem;
+import com.fourninenine.zombiegameclient.services.activityHelpers.GCMHelper;
 import com.google.android.gms.iid.InstanceID;
 
 
@@ -48,7 +50,7 @@ public class RegistrationIntentService extends IntentService {
     }
 
 
-    InstanceID instanceID = InstanceID.getInstance(this);
+    //InstanceID instanceID = InstanceID.getInstance(this);
 
 
     @Override
@@ -61,7 +63,12 @@ public class RegistrationIntentService extends IntentService {
             // are local.
             // [START get_token]
 
-            String token = instanceID.getToken(getString(R.string.gcm_sender_id),
+            if(Globals.getUserToken() == null){
+                GCMHelper tokenGenerator = new GCMHelper(getApplicationContext());
+                TokenItem token = new TokenItem(tokenGenerator.GCMRegister(R.string.gcm_sender_id+""));
+                Globals.setUserToken(token);
+            }
+            InstanceID.getToken(getString(R.string.gcm_sender_id),
                     GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
             // [END get_token]
             Log.i(TAG, "GCM Registration Token: " + token);

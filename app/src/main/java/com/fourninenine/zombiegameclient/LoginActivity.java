@@ -67,4 +67,9 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(mapIntent);
     }
 
+    public void navigateGCM(View view) {
+        Intent gcmIntent = new Intent(this, GCMTestActivity.class);
+
+        startActivity(gcmIntent);
+    }
 }

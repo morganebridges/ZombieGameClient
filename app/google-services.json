@@ -1,0 +1,35 @@
+{
+  "project_info": {
+    "project_number": "1066512751755",
+    "project_id": "zed-reckoning-51952499"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1066512751755:android:0bf39bd6677c19c2",
+        "android_client_info": {
+          "package_name": "com.fourninenine.zombiegameclient.application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDRkmHj5lfB8_x2DN34o62r5VYLKomwh34"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

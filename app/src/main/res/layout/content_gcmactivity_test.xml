@@ -15,7 +15,7 @@
         android:text="Register"
         android:id="@+id/registerButton"
         android:layout_gravity="center_horizontal"
-        android:onClick=""/>
+        android:onClick="registerGcm"/>
 
     <EditText
         android:layout_width="match_parent"
