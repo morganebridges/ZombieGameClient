@@ -25,6 +25,7 @@ public interface RESTUserInterface {
     @POST("getuser")
     Response<User> findUserByNameSynchronous(@Query("name") String name);
 
-
+    @POST("gcm/register")
+    Call<User> registerWithGcm(@Body long userId, @Body String token);
 
 }

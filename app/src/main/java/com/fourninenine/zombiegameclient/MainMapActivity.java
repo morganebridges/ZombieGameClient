@@ -5,7 +5,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.view.View;
 
+import com.fourninenine.zombiegameclient.httpServices.RESTInterfaces.RESTMapInterface;
 import com.fourninenine.zombiegameclient.httpServices.RESTServices.HttpMapService;
 import com.fourninenine.zombiegameclient.httpServices.RESTServices.HttpUserService;
 import com.google.android.gms.common.ConnectionResult;
@@ -15,6 +17,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+
+import retrofit2.Call;
+import retrofit2.Response;
 
 public class MainMapActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -91,9 +96,14 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
         super.onStop();
     }
     private void updateMap(){
-        HttpMapService mapService = new HttpMapService(mMap);
+        RESTMapInterface mapService = new HttpMapService(mMap);
         System.out.println("Updating map");
-        LatLng position = new LatLng(95.2, 45.0);
-        mapService.updateMap(new LatLng(position.latitude, position.longitude));
+        LatLng position = new LatLng(45.0, -95.2);
+        Call<LatLng[]> call = mapService.updateMap(new LatLng(position.latitude, position.longitude));
+
+    }
+
+    public void killNearest(View view) {
+
     }
 }

@@ -1,0 +1,5 @@
+<resources>
+   <!-- This resource is the client side key for Google Cloud Messaging -->
+    <string name="gcm_browser_key" templateMergeStrategy="preserve" translatable="false">AIzaSyDRkmHj5lfB8_x2DN34o62r5VYLKomwh34</string>
+
+</resources>

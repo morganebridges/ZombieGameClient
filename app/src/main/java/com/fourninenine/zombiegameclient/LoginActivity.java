@@ -31,6 +31,9 @@ public class LoginActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+
+
     }
 
     @Override
@@ -63,4 +66,5 @@ public class LoginActivity extends AppCompatActivity {
         Intent mapIntent = new Intent(this, MainMapActivity.class);
         startActivity(mapIntent);
     }
+
 }

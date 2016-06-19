@@ -2,4 +2,19 @@
     <string name="app_name">Zombie Game Client</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_main_map">Map</string>
+    <string name="attackButton">Kill</string>
+
+
+    //These strings are for use with GCM
+    <string name="gcm_send_message">Token retrieved and sent to server! You can now use gcmsender to
+        send downstream messages to this app.</string>
+    <string name="registering_message">Generating InstanceID token...</string>
+    <string name="token_error_message">An error occurred while either fetching the InstanceID token,
+        sending the fetched token to the server or subscribing to the PubSub topic. Please try
+        running the sample again.</string>
+    <string name="title_activity_gcmtest">GCMTestActivity</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_gcmactivity_test">GCMActivityTest</string>
+    <string name="PROJECT_ID">zed-reckoning-51952499</string>
+
 </resources>

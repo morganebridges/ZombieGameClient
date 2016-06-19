@@ -54,21 +54,7 @@ public class HttpUserService implements RESTUserInterface {
         //asynchronously.
 
 
-         call.enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                System.out.println("SUccess!!");
-                int statusCode = response.code();
-                //user = response.body();
 
-            }
-
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
-                System.out.println("ERROR");
-                throw new IllegalStateException("An error was encountered with the API call");
-            }
-        });
 
         System.out.println("Check for execution of call: " + call.isExecuted());
 
@@ -89,6 +75,11 @@ public class HttpUserService implements RESTUserInterface {
             e.printStackTrace();
         }
         return response;
+    }
+
+    @Override
+    public Call<User> registerWithGcm(@Body long userId, @Body String token) {
+        return apiService.findUserByName("testTag");
     }
 
 
