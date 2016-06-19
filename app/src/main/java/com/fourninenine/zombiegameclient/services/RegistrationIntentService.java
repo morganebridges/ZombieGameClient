@@ -62,13 +62,14 @@ public class RegistrationIntentService extends IntentService {
             // Initially this call goes out to the network to retrieve the token, subsequent calls
             // are local.
             // [START get_token]
-
+            InstanceID instanceID;
+            instanceID = new InstanceID(RegistrationIntentService.this, "what", "Fun");
             if(Globals.getUserToken() == null){
                 GCMHelper tokenGenerator = new GCMHelper(getApplicationContext());
                 TokenItem token = new TokenItem(tokenGenerator.GCMRegister(R.string.gcm_sender_id+""));
                 Globals.setUserToken(token);
             }
-            InstanceID.getToken(getString(R.string.gcm_sender_id),
+            instanceId.getToken(getString(R.string.gcm_sender_id),
                     GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
             // [END get_token]
             Log.i(TAG, "GCM Registration Token: " + token);
