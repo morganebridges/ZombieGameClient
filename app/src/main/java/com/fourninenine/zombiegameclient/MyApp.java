@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.fourninenine.zombiegameclient.models.utilities.Globals;
+import com.fourninenine.zombiegameclient.services.GCM;
 import com.orm.SugarContext;
 
 /**
@@ -16,9 +17,8 @@ public class MyApp extends Application{
     @Override
     public void onCreate(){
         super.onCreate();
-        MyApp.context = getApplicationContext();
         SugarContext.init(this);
-
+        context =  getApplicationContext();
         Intent loginIntent = new Intent(this, LoginActivity.class);
         startActivity(loginIntent);
         Globals globals = Globals.instance();

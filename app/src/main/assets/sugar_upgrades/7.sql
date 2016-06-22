@@ -1,0 +1,1 @@
+alter table USER add CLIENT_KEY LONG;

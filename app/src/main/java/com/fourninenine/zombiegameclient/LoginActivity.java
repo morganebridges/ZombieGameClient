@@ -1,6 +1,8 @@
 package com.fourninenine.zombiegameclient;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -10,14 +12,23 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.fourninenine.zombiegameclient.httpServices.RESTServices.HttpUserService;
 import com.fourninenine.zombiegameclient.models.User;
+import com.fourninenine.zombiegameclient.models.utilities.Globals;
+import com.fourninenine.zombiegameclient.services.RegistrationIntentService;
 import com.orm.SugarContext;
 
-public class LoginActivity extends AppCompatActivity {
+import deprecated.GCMTestActivity;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
+public class LoginActivity extends AppCompatActivity{
+    private static Context context;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        context = this.getApplicationContext();
         SugarContext.init(this);
         setContentView(R.layout.activity_login);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -32,15 +43,87 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        /* This part of the login controller is dedicated a) retrieving a uid from prefs or b) requesting
+         * for a user id from the server which will then persist. If we want more sophisticated user creation/accessing
+          * we will handle it later*/
+        login();
+
 
 
     }
 
+    /**
+     * Asks the server for a user object. If we have a UID in shared prefs it will grab it,
+     * otherwise we will get a new user from the server.
+     * @return
+     */
+    private void login() {
+        User user = null;
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        long clientKey = -1;
+        if(preferences.contains("clientKey"))
+            clientKey = preferences.getLong("clientKey", -1);
+
+        HttpUserService userService = new HttpUserService();
+        Call<User> call = userService.login(clientKey);
+
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                asyncLogin(response);
+
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private User asyncLogin(Response<User> asyncResponse){
+        SharedPreferences preferences = getSharedPreferences("prefs", MODE_PRIVATE);
+
+        User user = null;
+        Response<User> response = null;
+        try {
+            response = asyncResponse;
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("There was an error retrieving user object from server");
+        }
+        if(response != null){
+            user = response.body();
+            System.out.println("break here");
+            if(user != null){
+                Globals.setCurrentUser(user);
+                //edit system prefs to put our UID in persistent storage.
+                SharedPreferences.Editor editor = preferences.edit();
+                User.save(user);
+                editor.putLong("clientKey", user.getClientKey());
+                editor.apply();
+
+            } else System.out.println("User null after login"); if (Globals.checkPlayServices()) {
+                // Start IntentService to register this application with GCM.
+                Intent intent = new Intent(this, RegistrationIntentService.class);
+                startService(intent);
+            }
+        }else{
+            System.out.println("There was a problem with the response object");
+
+        }
+        return user;
+    }
+    public static Context getAppContext(){
+        return context;
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_login, menu);
         return true;
+
+
     }
 
     @Override
@@ -57,19 +140,9 @@ public class LoginActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-    public User login(){
-        User user = null;
-
-        return user;
-    }
     public void navigateMap(View view){
         Intent mapIntent = new Intent(this, MainMapActivity.class);
         startActivity(mapIntent);
     }
 
-    public void navigateGCM(View view) {
-        Intent gcmIntent = new Intent(this, GCMTestActivity.class);
-
-        startActivity(gcmIntent);
-    }
 }

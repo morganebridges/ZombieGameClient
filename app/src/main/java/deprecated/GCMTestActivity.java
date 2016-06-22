@@ -1,5 +1,6 @@
-package com.fourninenine.zombiegameclient;
+package deprecated;
 
+import com.fourninenine.zombiegameclient.R;
 import com.fourninenine.zombiegameclient.httpServices.RESTServices.HttpUserService;
 import com.fourninenine.zombiegameclient.models.User;
 import com.fourninenine.zombiegameclient.models.utilities.Globals;
@@ -65,7 +66,7 @@ public class GCMTestActivity extends AppCompatActivity {
                         .getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
                 if (sentToken) {
                     mInformationTextView.setText(getString(R.string.gcm_send_message));
-                } else {
+                } else if(mInformationTextView != null) {
                     mInformationTextView.setText(getString(R.string.token_error_message));
                 }
             }
@@ -106,9 +107,6 @@ public class GCMTestActivity extends AppCompatActivity {
             if (apiAvailability.isUserResolvableError(resultCode)) {
                 apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
                         .show();
-            } else {
-                Log.i(TAG, "This device is not supported.");
-                finish();
             }
             return false;
         }
@@ -129,10 +127,10 @@ public class GCMTestActivity extends AppCompatActivity {
             } else user = users.remove(0);
         }else user = Globals.getCurrentUser();
 
-        GetGCM();
+       // GetGCM();
 
-        Intent apiIntent = new Intent(this, RegistrationIntentService.class);
-        startService(apiIntent);
+        /*Intent apiIntent = new Intent(this, RegistrationIntentService.class);
+        startService(apiIntent);*/
 
         //if the list is empty, create a new user
 

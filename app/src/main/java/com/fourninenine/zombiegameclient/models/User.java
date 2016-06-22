@@ -6,12 +6,12 @@ import com.orm.SugarRecord;
  * Created by morganebridges on 5/28/16.
  */
     public class User extends SugarRecord{
-    private long key;
+    private long clientKey;
     private String name;
 
-    public User(String name, long key){
+    public User(String name, long clientKey){
         this.name = name;
-        this.key = key;
+        this.clientKey = clientKey;
     }
     public User(){}
 
@@ -26,11 +26,11 @@ import com.orm.SugarRecord;
     public void setId(long uid){
     }
 
-    public void setKey(long key){
-        this.key = key;
+    public void setClientKey(long clientKey){
+        this.clientKey = clientKey;
     }
 
-    public long getKey() {
-        return key;
+    public long getClientKey() {
+        return clientKey;
     }
 }

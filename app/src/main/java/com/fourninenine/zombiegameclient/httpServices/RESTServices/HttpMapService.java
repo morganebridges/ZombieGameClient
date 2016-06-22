@@ -2,6 +2,8 @@ package com.fourninenine.zombiegameclient.httpServices.RESTServices;
 
 import com.fourninenine.zombiegameclient.httpServices.RESTInterfaces.RESTMapInterface;
 import com.fourninenine.zombiegameclient.httpServices.RESTInterfaces.RESTUserInterface;
+import com.fourninenine.zombiegameclient.models.User;
+import com.fourninenine.zombiegameclient.models.Zombie;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -11,6 +13,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -40,27 +45,29 @@ public class HttpMapService implements RESTMapInterface {
         Implement the singleton pattern.
      */
 
-    @Override
-    public Call<LatLng[]> updateMap(@Body LatLng location) {
-        Call<LatLng[]> call = apiService.updateMap(location);
+    /*@Override
+    public Call<ArrayList<Zombie>> updateMap(@Body User user) {
+        Call<ArrayList<Zombie>> call = apiService.updateMap(user);
 
         //The enqueue method is commented out for purposes of unit testing, since it dispatches an execution call
         //asynchronously.
 
-        call.enqueue(new Callback<LatLng[]>() {
+        call.enqueue(new Callback<ArrayList<Zombie>>() {
             @Override
-            public void onResponse(Call<LatLng[]> call, Response<LatLng[]> response) {
+            public void onResponse(Call<ArrayList<Zombie>> call, Response<ArrayList<Zombie>> response) {
                 System.out.println("On success callback");
                 LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
-                LatLng[] latLngs = response.body();
-                for(int i = 0; i < latLngs.length; i++){
-                    MarkerOptions marker = new MarkerOptions().position(latLngs[i]).title("Zombie" + i);
+                ArrayList<Zombie> zombies = response.body();
+                Iterator<Zombie> zombIt= zombies.iterator();
+                while(zombIt.hasNext()){
+                    Zombie zom = zombIt.next();
+                    MarkerOptions marker = new MarkerOptions().position(zom.getLocation()).title("Zombie");
                     map.addMarker(marker);
-                    builder.include(latLngs[i]);
+                    builder.include(zom.getLocation());
                 }
                 LatLngBounds bounds = builder.build();
-                int padding = 0; // offset from edges of the map in pixels
+                int padding = 6; // offset from edges of the map in pixels
                 CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
 
                 map.moveCamera(cu);
@@ -68,12 +75,13 @@ public class HttpMapService implements RESTMapInterface {
             }
 
             @Override
-            public void onFailure(Call<LatLng[]> call, Throwable t) {
+            public void onFailure(Call<ArrayList<Zombie>> call, Throwable t) {
                 System.out.println("ERROR");
                 throw new IllegalStateException("An error was encountered with the API call");
+
             }
         });
         return call;
-    }
+    }*/
 
 }

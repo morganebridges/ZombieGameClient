@@ -1,13 +1,9 @@
 package com.fourninenine.zombiegameclient.services;
 
-import android.content.Context;
-
-import com.fourninenine.zombiegameclient.GCMTestActivity;
-import com.fourninenine.zombiegameclient.MyApp;
-import com.fourninenine.zombiegameclient.R;
+import com.fourninenine.zombiegameclient.LoginActivity;
+import com.fourninenine.zombiegameclient.models.utilities.Globals;
 import com.fourninenine.zombiegameclient.models.utilities.TokenItem;
 import com.fourninenine.zombiegameclient.models.utilities.TokenList;
-import com.fourninenine.zombiegameclient.services.activityHelpers.GCMHelper;
 import com.google.android.gms.iid.InstanceID;
 import com.google.android.gms.iid.InstanceIDListenerService;
 
@@ -22,20 +18,37 @@ public class MyInstanceIDService extends InstanceIDListenerService {
         // assuming you have defined TokenList as
         // some generalized store for your tokens
         TokenList tokenList = TokenList.Instance();
-        Context appContext = MyApp.getAppContext();
         System.out.println("see application context");
-        InstanceID iid = InstanceID.getInstance(appContext);
+        InstanceID iid = InstanceID.getInstance(LoginActivity.getAppContext());
         for(TokenItem tokenItem : tokenList.getMap()){
 
             try {
                 iid.getToken(tokenItem.authorizedEntity,tokenItem.scope,tokenItem.options);
             } catch (IOException e) {
                 e.printStackTrace();
+                System.out.println("Exception thrown when iterating through tokens");
             }
             // send this tokenItem.token to your server
         }
 
     }
+    public String retrieveTokenItem() throws IOException {
+        String token = "ass";
+        if(Globals.getUserToken() == null){
+            InstanceID iid = InstanceID.getInstance(LoginActivity.getAppContext());
+
+            try {
+                token = iid.getToken("1066512751755", "GCM");
+                Globals.setUserToken(new TokenItem(token));
+                return token;
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new IOException("Something went wrong with the token");
+            }
+        }
+        return Globals.getUserToken().getRegId();
+    }
+
     /*public String generateToken(){
 
         String authorizedEntity =  R.string.PROJECT_ID + "";
@@ -52,4 +65,5 @@ public class MyInstanceIDService extends InstanceIDListenerService {
         }
         return token1;
     }*/
+
 }

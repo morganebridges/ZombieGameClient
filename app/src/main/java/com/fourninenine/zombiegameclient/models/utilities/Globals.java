@@ -1,9 +1,16 @@
 package com.fourninenine.zombiegameclient.models.utilities;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Log;
+
+import com.fourninenine.zombiegameclient.LoginActivity;
 import com.fourninenine.zombiegameclient.MyApp;
 import com.fourninenine.zombiegameclient.models.User;
 import com.fourninenine.zombiegameclient.services.MyInstanceIDService;
 import com.fourninenine.zombiegameclient.services.activityHelpers.GCMHelper;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 
 import java.util.ArrayList;
 
@@ -41,7 +48,8 @@ public class Globals {
     public static void setCurrentUser(User currentUser) {
         currentUser = currentUser;
     }
-
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    private static final String TAG = "MainActivity";
     public static Globals instance() {
         if(instance != null)
             return instance;
@@ -58,4 +66,23 @@ public class Globals {
         return userToken;
     }
 
+    public static boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(LoginActivity.getAppContext());
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+               System.out.println("error resolving user for google stuff");
+            } else {
+                Log.i(TAG, "This device is not supported.");
+            }
+            return false;
+        }
+        return true;
+    }
+    public static User getUser(){
+        Context appContext = LoginActivity.getAppContext();
+        SharedPreferences prefs = appContext.getSharedPreferences("prefs", 0);
+        User user = User.find(User.class, "CLIENT_KEY=?", prefs.getLong("clientKey", -1)+"").remove(0);
+        return user;
+    }
 }

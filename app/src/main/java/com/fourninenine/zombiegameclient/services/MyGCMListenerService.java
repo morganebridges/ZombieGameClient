@@ -20,6 +20,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -27,13 +28,18 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.fourninenine.zombiegameclient.LoginActivity;
+import com.fourninenine.zombiegameclient.MainMapActivity;
 import com.fourninenine.zombiegameclient.R;
+import com.fourninenine.zombiegameclient.httpServices.RESTServices.HttpMapService;
+import com.fourninenine.zombiegameclient.httpServices.RESTServices.HttpUserService;
+import com.fourninenine.zombiegameclient.models.User;
+import com.fourninenine.zombiegameclient.models.utilities.Globals;
 import com.google.android.gms.gcm.GcmListenerService;
 import com.google.android.gms.iid.InstanceID;
 
 import java.io.IOException;
 
-public class MyGCMListenerService extends GcmListenerService {
+public class    MyGCMListenerService extends GcmListenerService {
 
     private static final String TAG = "MyGCMListenerService";
 
@@ -51,12 +57,16 @@ public class MyGCMListenerService extends GcmListenerService {
         Log.d(TAG, "From: " + from);
         Log.d(TAG, "Message: " + message);
 
+
+        HttpUserService userService = new HttpUserService();
+        userService.update(Globals.getUser());
+
         if (from.startsWith("/topics/")) {
             // message received from some topic.
         } else {
             // normal downstream message.
         }
-
+        sendNotification(message);
         // [START_EXCLUDE]
         /**
          * Production applications would usually process the message here.
@@ -69,7 +79,7 @@ public class MyGCMListenerService extends GcmListenerService {
          * In some cases it may be useful to show a notification indicating to the user
          * that a message was received.
          */
-        sendNotification(message);
+
         // [END_EXCLUDE]
     }
     // [END receive_message]
@@ -87,7 +97,7 @@ public class MyGCMListenerService extends GcmListenerService {
 
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                //.setSmallIcon(R.drawable.ic_stat_ic_notification)
+                .setSmallIcon(R.drawable.cast_ic_notification_0)
                 .setContentTitle("GCM Message")
                 .setContentText(message)
                 .setAutoCancel(true)

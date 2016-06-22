@@ -1,8 +1,11 @@
 package com.fourninenine.zombiegameclient.httpServices.RESTInterfaces;
 
 import com.fourninenine.zombiegameclient.models.User;
+import com.fourninenine.zombiegameclient.models.Zombie;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+
+import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -26,6 +29,13 @@ public interface RESTUserInterface {
     Response<User> findUserByNameSynchronous(@Query("name") String name);
 
     @POST("gcm/register")
-    Call<User> registerWithGcm(@Body long userId, @Body String token);
+    Call<User> registerWithGcm(@Query("gcmId") String token, @Query("key") long clientKey);
+
+    @POST("user/login")
+    Call<User> login(@Body long userId);
+
+    @POST("user/update")
+    Call<ArrayList<Zombie>> update(@Body User user);
+
 
 }

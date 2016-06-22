@@ -13,12 +13,10 @@ package com.fourninenine.zombiegameclient.services; /**
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import com.fourninenine.zombiegameclient.LoginActivity;
 import com.fourninenine.zombiegameclient.R;
 import com.fourninenine.zombiegameclient.models.User;
 import com.fourninenine.zombiegameclient.models.utilities.Globals;
-import com.fourninenine.zombiegameclient.models.utilities.TokenItem;
-import com.fourninenine.zombiegameclient.services.activityHelpers.GCMHelper;
-import com.google.android.gms.iid.InstanceID;
 
 
 import android.app.IntentService;
@@ -31,8 +29,6 @@ import android.util.Log;
 //import com.fourninenine.zombiegameclient.R.string;
 import com.fourninenine.zombiegameclient.httpServices.RESTServices.HttpUserService;
 import com.google.android.gms.gcm.GcmPubSub;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.google.android.gms.iid.InstanceID;
 
 import java.io.IOException;
 
@@ -55,6 +51,7 @@ public class RegistrationIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         try {
@@ -62,25 +59,39 @@ public class RegistrationIntentService extends IntentService {
             // Initially this call goes out to the network to retrieve the token, subsequent calls
             // are local.
             // [START get_token]
-            InstanceID instanceID;
-            instanceID = new InstanceID(RegistrationIntentService.this, "what", "Fun");
-            if(Globals.getUserToken() == null){
+            String token;
+            /*if(Globals.getUserToken() == null){
                 GCMHelper tokenGenerator = new GCMHelper(getApplicationContext());
-                TokenItem token = new TokenItem(tokenGenerator.GCMRegister(R.string.gcm_sender_id+""));
-                Globals.setUserToken(token);
+                token = null;
+                try {
+                    token = tokenGenerator.GCMRegister(R.string.gcm_sender_id+"");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                TokenItem tokenItem = new TokenItem(token);
+                Globals.setUserToken(tokenItem);
+            }else{ token = Globals.getUserToken().getRegId();}
+
+            // [END get_token]*/
+            MyInstanceIDService idService = new MyInstanceIDService();
+            token = idService.retrieveTokenItem();
+
+            while(token == null){
+                System.out.println("spinning");
             }
-            instanceId.getToken(getString(R.string.gcm_sender_id),
-                    GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
-            // [END get_token]
             Log.i(TAG, "GCM Registration Token: " + token);
 
             // TODO: Implement this method to send any registration to your app's servers.
             sendRegistrationToServer(token);
 
             // Subscribe to topic channels
-            subscribeTopics(token);
+                try {
+                    subscribeTopics(token);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
-            // You should store a boolean that indicates whether the generated token has been
+                // You should store a boolean that indicates whether the generated token has been
             // sent to your server. If the boolean is false, send the token to your server,
             // otherwise your server should have already received the token.
             sharedPreferences.edit().putBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, true).apply();
@@ -107,14 +118,13 @@ public class RegistrationIntentService extends IntentService {
     public void sendRegistrationToServer(String token) {
         String authorizedEntity =  R.string.PROJECT_ID + "";
         String scope = "GCM";
-        String token1 = null;
-        try {
-            token1 = instanceID.getToken(authorizedEntity, scope);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        SharedPreferences preferences = LoginActivity.getAppContext().getSharedPreferences("prefs", MODE_PRIVATE);
+        long clientKey = preferences.getLong("clientKey", -1);
+        System.out.println("current client key");
+
+
         HttpUserService userService = new HttpUserService();
-        Call<User> regCall = userService.registerWithGcm(Globals.getCurrentUser().getId(), token1);
+        Call<User> regCall = userService.registerWithGcm(token, clientKey);
 
         regCall.enqueue(new Callback<User>() {
             @Override

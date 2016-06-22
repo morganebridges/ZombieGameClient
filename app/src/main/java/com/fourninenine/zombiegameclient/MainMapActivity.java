@@ -10,6 +10,8 @@ import android.view.View;
 import com.fourninenine.zombiegameclient.httpServices.RESTInterfaces.RESTMapInterface;
 import com.fourninenine.zombiegameclient.httpServices.RESTServices.HttpMapService;
 import com.fourninenine.zombiegameclient.httpServices.RESTServices.HttpUserService;
+import com.fourninenine.zombiegameclient.models.Zombie;
+import com.fourninenine.zombiegameclient.models.utilities.Globals;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -18,12 +20,15 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import retrofit2.Call;
 import retrofit2.Response;
 
 public class MainMapActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
-    private GoogleMap mMap;
+    static GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     @Override
@@ -99,11 +104,14 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
         RESTMapInterface mapService = new HttpMapService(mMap);
         System.out.println("Updating map");
         LatLng position = new LatLng(45.0, -95.2);
-        Call<LatLng[]> call = mapService.updateMap(new LatLng(position.latitude, position.longitude));
+        Call<ArrayList<Zombie>> call = mapService.updateMap(Globals.getUser());
 
     }
 
     public void killNearest(View view) {
 
+    }
+    public static GoogleMap getMap(){
+        return mMap;
     }
 }

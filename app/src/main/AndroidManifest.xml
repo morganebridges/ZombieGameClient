@@ -23,7 +23,7 @@
             android:value="zombiegame.db" />
         <meta-data
             android:name="VERSION"
-            android:value="5" />
+            android:value="7" />
         <meta-data
             android:name="QUERY_LOG"
             android:value="true" />
@@ -98,7 +98,7 @@
             android:name=".MainMapActivity"
             android:label="@string/title_activity_main_map" />
         <activity
-            android:name=".GCMTestActivity"
+            android:name="deprecated.GCMTestActivity"
             android:label="@string/title_activity_gcmtest"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>
