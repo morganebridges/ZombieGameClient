@@ -1,1 +1,0 @@
-alter table USER add KEY INTEGER;

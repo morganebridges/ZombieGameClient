@@ -7,16 +7,23 @@ import com.orm.SugarRecord;
  * Created by morganebridges on 6/4/16.
  */
 public class Zombie extends SugarRecord {
-    LatLng location;
+    double latitude;
+    double longitude;
     int hp;
+    long zombieKey;
 
-    public Zombie(LatLng location, int hp) {
-        this.location = location;
+    public Zombie(double latitude, double longitude, int hp, long key) {
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.hp = hp;
+        this.zombieKey = key;
     }
 
 
     public LatLng getLocation(){
-        return location;
+        return new LatLng(latitude, longitude);
+    }
+    public long getKey(){
+        return zombieKey;
     }
 }

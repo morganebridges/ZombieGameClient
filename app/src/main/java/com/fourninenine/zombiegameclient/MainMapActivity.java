@@ -8,10 +8,13 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.fourninenine.zombiegameclient.httpServices.RESTInterfaces.RESTMapInterface;
+import com.fourninenine.zombiegameclient.httpServices.RESTInterfaces.RESTUserInterface;
 import com.fourninenine.zombiegameclient.httpServices.RESTServices.HttpMapService;
 import com.fourninenine.zombiegameclient.httpServices.RESTServices.HttpUserService;
+import com.fourninenine.zombiegameclient.models.User;
 import com.fourninenine.zombiegameclient.models.Zombie;
 import com.fourninenine.zombiegameclient.models.utilities.Globals;
+import com.fourninenine.zombiegameclient.services.MapDrawingService;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -20,6 +23,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -31,6 +35,8 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
     static GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
+    User user;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +100,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
     protected void onStart(){
         mGoogleApiClient.connect();
         super.onStart();
+        user = Globals.getUser();
     }
     @Override
     protected void onStop(){
@@ -101,10 +108,18 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
         super.onStop();
     }
     private void updateMap(){
-        RESTMapInterface mapService = new HttpMapService(mMap);
-        System.out.println("Updating map");
+        //for now we are going to have this hard coded for ease of testing
+
         LatLng position = new LatLng(45.0, -95.2);
-        Call<ArrayList<Zombie>> call = mapService.updateMap(Globals.getUser());
+        user.setLocation(position);
+
+        RESTUserInterface userService = new HttpUserService();
+        Call<ArrayList<Zombie>> updateCall = userService.update(user);
+        MapDrawingService drawService = new MapDrawingService(user, updateCall, mMap);
+        drawService.draw();
+
+        System.out.println("Updating map");
+
 
     }
 

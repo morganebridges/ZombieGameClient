@@ -17,8 +17,6 @@ import com.fourninenine.zombiegameclient.models.User;
 import com.fourninenine.zombiegameclient.models.utilities.Globals;
 import com.fourninenine.zombiegameclient.services.RegistrationIntentService;
 import com.orm.SugarContext;
-
-import deprecated.GCMTestActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
