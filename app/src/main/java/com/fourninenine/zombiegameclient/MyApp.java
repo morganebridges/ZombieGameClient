@@ -3,15 +3,17 @@ package com.fourninenine.zombiegameclient;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.support.multidex.MultiDexApplication;
 
 import com.fourninenine.zombiegameclient.models.utilities.Globals;
 import com.fourninenine.zombiegameclient.services.GCM;
 import com.orm.SugarContext;
+import android.support.MultiDexApplication
 
 /**
  * Created by morganebridges on 6/4/16.
  */
-public class MyApp extends Application{
+public class MyApp extends MultiDexApplication{
     private static Context context;
 
     @Override
