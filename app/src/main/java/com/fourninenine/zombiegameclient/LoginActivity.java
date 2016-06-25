@@ -3,6 +3,7 @@ package com.fourninenine.zombiegameclient;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -14,6 +15,7 @@ import android.view.MenuItem;
 
 import com.fourninenine.zombiegameclient.httpServices.RESTServices.HttpUserService;
 import com.fourninenine.zombiegameclient.models.User;
+import com.fourninenine.zombiegameclient.models.utilities.DatabaseHelper;
 import com.fourninenine.zombiegameclient.models.utilities.Globals;
 import com.fourninenine.zombiegameclient.services.RegistrationIntentService;
 import com.orm.SugarContext;
@@ -22,11 +24,15 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity{
+    DatabaseHelper helper;
+
+
     private static Context context;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = this.getApplicationContext();
+        context.openOrCreateDatabase("zombiegame.db", MODE_PRIVATE, null);
         SugarContext.init(this);
         setContentView(R.layout.activity_login);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -56,7 +62,6 @@ public class LoginActivity extends AppCompatActivity{
      * @return
      */
     private void login() {
-        User user = null;
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
         long clientKey = -1;
         if(preferences.contains("clientKey"))
@@ -74,7 +79,6 @@ public class LoginActivity extends AppCompatActivity{
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-
             }
         });
     }

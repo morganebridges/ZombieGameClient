@@ -30,7 +30,7 @@ public class ApplicationDataTest extends ApplicationTestCase<MyApp> {
      * A simple series of operations using sugar ORM calls.
      */
     public void testPersistence(){
-        User user = new User("myUserName", 666);
+        User user = new User();
 
         //Save to the database, generating a user id.
         user.save();

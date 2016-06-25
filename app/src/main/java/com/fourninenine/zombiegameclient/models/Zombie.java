@@ -2,10 +2,12 @@ package com.fourninenine.zombiegameclient.models;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.orm.SugarRecord;
+import com.orm.dsl.Table;
 
 /**
  * Created by morganebridges on 6/4/16.
  */
+@Table
 public class Zombie extends SugarRecord {
     double latitude;
     double longitude;

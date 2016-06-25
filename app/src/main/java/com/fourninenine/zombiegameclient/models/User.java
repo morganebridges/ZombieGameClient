@@ -2,10 +2,11 @@ package com.fourninenine.zombiegameclient.models;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.orm.SugarRecord;
+import com.orm.dsl.Table;
 
 /**
  * Created by morganebridges on 5/28/16.
- */
+ */ @Table
     public class User extends SugarRecord{
     private long clientKey;
     private String name;

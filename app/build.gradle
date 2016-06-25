@@ -10,6 +10,7 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -42,8 +43,11 @@ dependencies {
 
     testCompile 'junit:junit:4.12'
 
+    compile 'com.android.support:multidex:1.0.1'
+
+
     //Included so that we can make use of rest templates and consume from Spring.
-    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.3.6'
+    //compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.3.6'
 
     //Retrofit OKHttp
     
