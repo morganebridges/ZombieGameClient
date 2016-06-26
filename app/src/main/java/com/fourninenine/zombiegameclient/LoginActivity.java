@@ -107,6 +107,7 @@ public class LoginActivity extends AppCompatActivity{
 
             } else System.out.println("User null after login"); if (Globals.checkPlayServices()) {
                 // Start IntentService to register this application with GCM.
+
                 Intent intent = new Intent(this, RegistrationIntentService.class);
                 startService(intent);
             }

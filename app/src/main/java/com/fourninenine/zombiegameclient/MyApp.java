@@ -5,7 +5,6 @@ import com.fourninenine.zombiegameclient.models.utilities.Globals;
 import com.orm.SugarContext;
 import android.support.multidex.*;
 
-
 /**
  * Created by morganebridges on 6/4/16.
  */
@@ -18,7 +17,7 @@ public class MyApp extends MultiDexApplication{
         SugarContext.init(this);
         context =  getApplicationContext();
         Intent loginIntent = new Intent(this, LoginActivity.class);
-        startActivity(loginIntent);
+        //startActivity(loginIntent);
         Globals globals = Globals.instance();
     }
     @Override
