@@ -2,6 +2,7 @@ package com.fourninenine.zombiegameclient.httpServices.RESTInterfaces;
 
 import com.fourninenine.zombiegameclient.models.User;
 import com.fourninenine.zombiegameclient.models.Zombie;
+import com.fourninenine.zombiegameclient.models.dto.UserActionDto;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -35,7 +36,7 @@ public interface RESTUserInterface {
     Call<User> login(@Body long userId);
 
     @POST("user/update")
-    Call<ArrayList<Zombie>> update(@Body User user);
+    Call<ArrayList<Zombie>> update(@Body UserActionDto userActionDto);
 
 
 }
