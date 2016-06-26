@@ -19,10 +19,10 @@ public class Zombie {
         this.id = id;
     }
 
-
     public LatLng getLocation(){
         return new LatLng(latitude, longitude);
     }
+
     public long getId(){
         return id;
     }
