@@ -15,10 +15,12 @@ import com.fourninenine.zombiegameclient.services.MapDrawingService;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -67,19 +69,19 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
     @Override
     public void onMapReady(GoogleMap googleMap) throws SecurityException{
         mMap = googleMap;
-        // Add a marker to my last location and center the camera.
-       // mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-       // LatLng lastLatLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-       // mMap.addMarker(new MarkerOptions().position(lastLatLng).title("My Last Location"));
-      //  mMap.moveCamera(CameraUpdateFactory.newLatLng(lastLatLng));
+        //Add a marker to my last location and center the camera.
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        LatLng lastLatLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+        mMap.addMarker(new MarkerOptions().position(lastLatLng).title("My Last Location"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(lastLatLng));
         updateMap();
         System.out.println("Past updating the map");
     }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) throws SecurityException{
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
+
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if (mLastLocation != null) {
            System.out.println("Location Found");
         }
@@ -108,9 +110,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
     private void updateMap(){
         //for now we are going to have this hard coded for ease of testing
 
-        LatLng position = new LatLng(45.0, -95.2);
-        user.setLocation(position);
-
+        user.setLocation(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
         RESTUserInterface userService = new HttpUserService();
         Call<ArrayList<Zombie>> updateCall = userService.update(user);
 
