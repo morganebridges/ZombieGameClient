@@ -26,7 +26,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity{
-    DatabaseHelper helper;
 
 
     private static Context context;
@@ -34,7 +33,6 @@ public class LoginActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = this.getApplicationContext();
-        context.openOrCreateDatabase("zombiegame.db", MODE_PRIVATE, null);
         setContentView(R.layout.activity_login);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -63,7 +61,7 @@ public class LoginActivity extends AppCompatActivity{
      * @return
      */
     private void login() {
-        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences("prefs", MODE_PRIVATE);
         long clientKey = -1;
         if(preferences.contains("clientKey"))
             clientKey = preferences.getLong("clientKey", -1);
@@ -104,6 +102,7 @@ public class LoginActivity extends AppCompatActivity{
                 SharedPreferences.Editor editor = preferences.edit();
 
                 editor.putLong("clientKey", user.getId());
+                editor.apply();
                 editor.apply();
 
             } else System.out.println("User null after login"); if (Globals.checkPlayServices()) {
