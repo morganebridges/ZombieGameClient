@@ -17,4 +17,13 @@
     <string name="title_activity_gcmactivity_test">GCMActivityTest</string>
     <string name="PROJECT_ID">zed-reckoning-51952499</string>
 
+    //User Strings
+    <string name="user_shared_preferences">"userPrefs</string>
+    <string name="user_id">id</string>
+    <string name="user_name">name</string>
+    <string name="user_longitude">longitude</string>
+    <string name="user_latitude">latitude</string>
+    <string name="user_ammo">ammo</string>
+    <string name="user_serum">serum</string>
+    <string name="user_gcmid">gcmId</string>
 </resources>

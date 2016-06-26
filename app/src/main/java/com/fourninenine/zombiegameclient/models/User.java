@@ -3,11 +3,12 @@ package com.fourninenine.zombiegameclient.models;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.fourninenine.zombiegameclient.LoginActivity;
+import com.fourninenine.zombiegameclient.R;
+import com.fourninenine.zombiegameclient.models.utilities.ApplicationContextProvider;
 import com.google.android.gms.maps.model.LatLng;
 
 /**
- * Created by morganebridges on 5/28/16.
+ * A user model class with methods to retrieve and save itself to shared preferences
  */
 public class User{
 
@@ -17,14 +18,16 @@ public class User{
     private double longitude;
     private int serum;
     private int ammo;
+    private String gcmId;
 
-    public User(String name, long id, double latitude, double longitude, int serum, int ammo){
+    public User(String name, long id, double latitude, double longitude, int serum, int ammo, String gcmId){
         this.id = id;
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
         this.serum = serum;
         this.ammo = ammo;
+        this.gcmId = gcmId;
     }
 
     public User(){}
@@ -32,25 +35,44 @@ public class User{
     // Utility methods
 
     public static User getUser() {
-        SharedPreferences preferences = LoginActivity.getAppContext().getSharedPreferences("userPrefs", Context.MODE_PRIVATE);
-        long id = preferences.getLong("id", -1);
-        String name = preferences.getString("name", "noname");
-        double latitude = Double.longBitsToDouble(preferences.getLong("latitude", -1));
-        double longitude = Double.longBitsToDouble(preferences.getLong("longitude", -1));
-        int serum = preferences.getInt("serum", -1);
-        int ammo = preferences.getInt("ammo", -1);
-        return  new User(name, id, latitude, longitude, serum, ammo);
+        Context context = ApplicationContextProvider.getAppContext();
+        SharedPreferences preferences = context.getSharedPreferences(
+                context.getString(R.string.user_shared_preferences), Context.MODE_PRIVATE);
+
+        long id = preferences.getLong(
+                context.getString(R.string.user_id), -1);
+        String name = preferences.getString(
+                context.getString(R.string.user_name), "generic jerk");
+        double latitude = Double.longBitsToDouble(preferences.getLong(
+                context.getString(R.string.user_latitude), -1));
+        double longitude = Double.longBitsToDouble(preferences.getLong(
+                context.getString(R.string.user_longitude), -1));
+        int serum = preferences.getInt(
+                context.getString(R.string.user_serum), -1);
+        int ammo = preferences.getInt(
+                context.getString(R.string.user_ammo), -1);
+        String gcmId = preferences.getString(
+                context.getString(R.string.user_gcmid), "");
+
+        return  new User(name, id, latitude, longitude, serum, ammo, gcmId);
     }
 
     public void save() {
-        SharedPreferences preferences = LoginActivity.getAppContext().getSharedPreferences("userPrefs", Context.MODE_PRIVATE);
+        Context context = ApplicationContextProvider.getAppContext();
+        SharedPreferences preferences = context.getSharedPreferences(
+                context.getString(R.string.user_shared_preferences), Context.MODE_PRIVATE);
+
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putLong("id", this.id);
-        editor.putString("name", this.name);
-        editor.putLong("latitude", Double.doubleToRawLongBits(this.latitude));
-        editor.putLong("longitude", Double.doubleToRawLongBits(this.longitude));
-        editor.putInt("serum", this.serum);
-        editor.putInt("ammo", this.ammo);
+        editor.putLong(context.getString(R.string.user_id), this.id);
+        editor.putString(context.getString(R.string.user_name), this.name);
+        editor.putLong(context.getString(R.string.user_latitude),
+                Double.doubleToRawLongBits(this.latitude));
+        editor.putLong(context.getString(R.string.user_longitude),
+                Double.doubleToRawLongBits(this.longitude));
+        editor.putInt(context.getString(R.string.user_serum), this.serum);
+        editor.putInt(context.getString(R.string.user_ammo), this.ammo);
+        editor.putString(context.getString(R.string.user_gcmid), this.gcmId);
+
         editor.apply();
     }
 
@@ -110,5 +132,13 @@ public class User{
 
     public void setSerum(int serum) {
         this.serum = serum;
+    }
+
+    public String getGcmId() {
+        return gcmId;
+    }
+
+    public void setGcmId(String gcmId) {
+        this.gcmId = gcmId;
     }
 }
