@@ -1,25 +1,34 @@
 package com.fourninenine.zombiegameclient;
+
+import android.annotation.SuppressLint;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.support.multidex.MultiDexApplication;
+
 import com.fourninenine.zombiegameclient.models.utilities.Globals;
 import com.orm.SugarContext;
 
 /**
  * Created by morganebridges on 6/4/16.
  */
-public class MyApp extends MultiDexApplication{
-    private static Context context;
+public class MyApp extends MultiDexApplication {
+
+    // Shut up, lint.  It's not a leak when it's the Application context.
+    @SuppressLint("StaticFieldLeak")
+    private static Application context;
 
     @Override
     public void onCreate(){
         super.onCreate();
         SugarContext.init(this);
-        context =  getApplicationContext();
+        context = this;
+
         Intent loginIntent = new Intent(this, LoginActivity.class);
         //startActivity(loginIntent);
         Globals globals = Globals.instance();
     }
+
     @Override
     public void onTerminate(){
         super.onTerminate();
@@ -31,13 +40,5 @@ public class MyApp extends MultiDexApplication{
             return MyApp.context;
         else throw new IllegalStateException("App context null!?!");
     }
-    public static void setContext(Context c) throws IllegalStateException{
-        MyApp.context = c;
-    }
-    @Override
-    protected void attachBaseContext(Context base){
-        super.attachBaseContext(base);
-        //MultiDexApplication .install(this);
 
-    }
 }

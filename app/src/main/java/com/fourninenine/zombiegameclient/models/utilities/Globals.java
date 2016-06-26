@@ -7,7 +7,6 @@ import android.util.Log;
 import com.fourninenine.zombiegameclient.LoginActivity;
 import com.fourninenine.zombiegameclient.MyApp;
 import com.fourninenine.zombiegameclient.models.User;
-import com.fourninenine.zombiegameclient.services.MyInstanceIDService;
 import com.fourninenine.zombiegameclient.services.activityHelpers.GCMHelper;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -88,6 +87,7 @@ public class Globals {
         Iterator<User> usersAll =  User.findAll(User.class);
         while(usersAll.hasNext()){}
         User user = new User("POOP", 112, 45.2, -95.1);
+
         return user;
     }
     public static Iterator<User> getOnlyUser(){
