@@ -7,7 +7,6 @@ import android.util.Log;
 import com.fourninenine.zombiegameclient.LoginActivity;
 import com.fourninenine.zombiegameclient.MyApp;
 import com.fourninenine.zombiegameclient.models.User;
-import com.fourninenine.zombiegameclient.services.MyInstanceIDService;
 import com.fourninenine.zombiegameclient.services.activityHelpers.GCMHelper;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -86,7 +85,7 @@ public class Globals {
         SharedPreferences prefs = appContext.getSharedPreferences("prefs", 0);
         List<User> users = User.find(User.class, "CLIENT_KEY=?", prefs.getLong("clientKey", -1)+"");
 
-        User user;
+        User user = null;
         return user;
     }
     public static Iterator<User> getOnlyUser(){
