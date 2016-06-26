@@ -103,7 +103,7 @@ public class LoginActivity extends AppCompatActivity{
                 //edit system prefs to put our UID in persistent storage.
                 SharedPreferences.Editor editor = preferences.edit();
 
-                editor.putLong("clientKey", user.getClientKey());
+                editor.putLong("clientKey", user.getId());
                 editor.apply();
 
             } else System.out.println("User null after login"); if (Globals.checkPlayServices()) {

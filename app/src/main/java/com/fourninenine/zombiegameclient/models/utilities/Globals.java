@@ -81,10 +81,7 @@ public class Globals {
         return true;
     }
     public static User getUser(){
-        Context appContext = LoginActivity.getAppContext();
-        SharedPreferences prefs = appContext.getSharedPreferences("prefs", 0);
-        User user = new User("POOP", 112, 45.2, -95.1);
-
+        User user = User.getUser();
         return user;
     }
 }
