@@ -21,9 +21,6 @@ public class MyApp extends MultiDexApplication {
     public void onCreate(){
         super.onCreate();
         context = this;
-
-        Intent loginIntent = new Intent(this, LoginActivity.class);
-        //startActivity(loginIntent);
         Globals globals = Globals.instance();
     }
 

@@ -119,12 +119,13 @@ public class RegistrationIntentService extends IntentService {
         System.out.println("current client key");
 
 
-        HttpUserService userService = new HttpUserService();
+        final HttpUserService userService = new HttpUserService();
         Call<User> regCall = userService.registerWithGcm(token, clientKey);
 
         regCall.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
+                response.body().save();
                 System.out.println("You have successfully registered for messages!!");
 
             }

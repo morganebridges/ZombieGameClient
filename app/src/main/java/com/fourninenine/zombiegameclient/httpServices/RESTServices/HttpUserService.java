@@ -105,30 +105,8 @@ public class HttpUserService implements RESTUserInterface {
     @Override
     public Call<ArrayList<Zombie>> update(@Body User user) {
         Call<ArrayList<Zombie>> call = apiService.update(user);
-
-        //The enqueue method is commented out for purposes of unit testing, since it dispatches an execution call
-        //asynchronously.
-
-        call.enqueue(new Callback<ArrayList<Zombie>>() {
-            @Override
-            public void onResponse(Call<ArrayList<Zombie>> call, Response<ArrayList<Zombie>> response) {
-                System.out.println("On success callback");
-                LatLngBounds.Builder builder = new LatLngBounds.Builder();
-
-                ArrayList<Zombie> zombies = response.body();
-                Iterator<Zombie> zombIt= zombies.iterator();
-                while(zombIt.hasNext()){
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ArrayList<Zombie>> call, Throwable t) {
-                System.out.println("ERROR");
-                throw new IllegalStateException("An error was encountered with the API call");
-
-            }
-        });
-        return call;    }
+        return call;
+    }
 
 
     @Override

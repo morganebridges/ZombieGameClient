@@ -7,13 +7,10 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.view.View;
 
-import com.fourninenine.zombiegameclient.httpServices.RESTInterfaces.RESTMapInterface;
 import com.fourninenine.zombiegameclient.httpServices.RESTInterfaces.RESTUserInterface;
-import com.fourninenine.zombiegameclient.httpServices.RESTServices.HttpMapService;
 import com.fourninenine.zombiegameclient.httpServices.RESTServices.HttpUserService;
 import com.fourninenine.zombiegameclient.models.User;
 import com.fourninenine.zombiegameclient.models.Zombie;
-import com.fourninenine.zombiegameclient.models.utilities.Globals;
 import com.fourninenine.zombiegameclient.services.MapDrawingService;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -23,11 +20,11 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainMapActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -36,6 +33,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     User user;
+    ArrayList<Zombie> zombieList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,10 +113,27 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
 
         RESTUserInterface userService = new HttpUserService();
         Call<ArrayList<Zombie>> updateCall = userService.update(user);
-        MapDrawingService drawService = new MapDrawingService(user, updateCall, mMap);
-        drawService.draw();
 
-        System.out.println("Updating map");
+        updateCall.enqueue(new Callback<ArrayList<Zombie>>() {
+            MapDrawingService drawService = new MapDrawingService(user, mMap);
+
+            @Override
+            public void onResponse(Call<ArrayList<Zombie>> call, Response<ArrayList<Zombie>> response) {
+                System.out.println("On success callback");
+
+                ArrayList<Zombie> zombies = response.body();
+                Iterator<Zombie> zombIt= zombies.iterator();
+                drawService.placeZombies(zombIt);
+            }
+            @Override
+            public void onFailure(Call<ArrayList<Zombie>> call, Throwable t) {
+                System.out.println("ERROR");
+                throw new IllegalStateException("An error was encountered with the API call");
+
+            }
+        });
+
+        System.out.println("Updated map.");
 
 
     }

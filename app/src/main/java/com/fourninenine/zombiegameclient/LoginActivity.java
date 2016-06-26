@@ -98,11 +98,7 @@ public class LoginActivity extends AppCompatActivity{
             System.out.println("break here");
             if(user != null){
                 Globals.setCurrentUser(user);
-                //edit system prefs to put our UID in persistent storage.
-                SharedPreferences.Editor editor = preferences.edit();
-
-                editor.putLong("clientKey", user.getId());
-                editor.apply();
+                user.save();
 
             } else System.out.println("User null after login"); if (Globals.checkPlayServices()) {
                 // Start IntentService to register this application with GCM.
