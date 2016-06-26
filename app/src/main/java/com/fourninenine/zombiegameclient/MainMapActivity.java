@@ -100,7 +100,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
     protected void onStart(){
         mGoogleApiClient.connect();
         super.onStart();
-        user = Globals.getUser();
+        user = Globals.getOnlyUser().next();
     }
     @Override
     protected void onStop(){

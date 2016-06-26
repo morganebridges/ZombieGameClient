@@ -45,10 +45,6 @@ public class RegistrationIntentService extends IntentService {
         super(TAG);
     }
 
-
-    //InstanceID instanceID = InstanceID.getInstance(this);
-
-
     @Override
     protected void onHandleIntent(Intent intent) {
 

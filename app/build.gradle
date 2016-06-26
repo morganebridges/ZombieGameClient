@@ -3,13 +3,16 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
-
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
     defaultConfig {
         applicationId "com.fourninenine.zombiegameclient.application"
-        minSdkVersion 15
+        minSdkVersion 21
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -39,11 +42,14 @@ dependencies {
 
     //for using GCM
     //compile "com.google.android.gms:play-services-gcm:9.0.2"
-
+    androidTestCompile 'com.google.guava:guava:18.0'
     testCompile 'junit:junit:4.12'
 
+    compile 'com.android.support:multidex:1.0.1'
+
+
     //Included so that we can make use of rest templates and consume from Spring.
-    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.3.6'
+    //compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.3.6'
 
     //Retrofit OKHttp
     
@@ -65,6 +71,8 @@ dependencies {
 
     compile 'com.google.android.gms:play-services:9.0.2'
     compile 'com.google.android.gms:play-services-auth:9.0.2'
-    compile 'com.firebase:firebase-client-android:2.3.1'}
+    compile 'com.firebase:firebase-client-android:2.3.1'
+    androidTestCompile 'org.testng:testng:6.9.6'
+}
 //Section for plugins to apply:
 apply plugin: 'com.google.gms.google-services'

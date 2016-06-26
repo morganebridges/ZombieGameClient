@@ -23,7 +23,7 @@ public class ExampleUnitTest {
     public void findUserByNameAsyncTest() throws Exception {
         HttpUserService apiService = new HttpUserService();
         System.out.println("API TEST");
-        User me = new User("me", 123);
+        User me = new User();
 
         Call<User> call = apiService.findUserByName("testTag");
 
