@@ -103,7 +103,6 @@ public class LoginActivity extends AppCompatActivity{
 
                 editor.putLong("clientKey", user.getId());
                 editor.apply();
-                editor.apply();
 
             } else System.out.println("User null after login"); if (Globals.checkPlayServices()) {
                 // Start IntentService to register this application with GCM.

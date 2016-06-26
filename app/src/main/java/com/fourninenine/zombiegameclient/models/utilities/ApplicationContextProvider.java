@@ -3,28 +3,22 @@ package com.fourninenine.zombiegameclient.models.utilities;
 import android.app.Application;
 import android.content.Context;
 
-public class ApplicationContextProvider extends Application {
+import com.fourninenine.zombiegameclient.LoginActivity;
+
+public class ApplicationContextProvider {
 
     /**
      * Keeps a reference of the application context
      */
     private static Context sContext;
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        sContext = getApplicationContext();
-
-    }
-
     /**
      * Returns the application context
      *
      * @return application context
      */
-    public static Context getContext() {
-        return sContext;
+    public static Context getAppContext() {
+        return LoginActivity.getAppContext();
     }
 
 }
