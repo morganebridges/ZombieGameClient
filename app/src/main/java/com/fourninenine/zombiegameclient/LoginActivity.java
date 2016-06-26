@@ -18,7 +18,6 @@ import com.fourninenine.zombiegameclient.models.User;
 import com.fourninenine.zombiegameclient.models.utilities.DatabaseHelper;
 import com.fourninenine.zombiegameclient.models.utilities.Globals;
 import com.fourninenine.zombiegameclient.services.RegistrationIntentService;
-import com.orm.SugarContext;
 
 import java.util.Iterator;
 
@@ -36,7 +35,6 @@ public class LoginActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         context = this.getApplicationContext();
         context.openOrCreateDatabase("zombiegame.db", MODE_PRIVATE, null);
-        SugarContext.init(this);
         setContentView(R.layout.activity_login);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -104,8 +102,6 @@ public class LoginActivity extends AppCompatActivity{
                 Globals.setCurrentUser(user);
                 //edit system prefs to put our UID in persistent storage.
                 SharedPreferences.Editor editor = preferences.edit();
-                User.save(user);
-                Iterator<User> userIteratorUser = User.findAll(User.class);
 
                 editor.putLong("clientKey", user.getClientKey());
                 editor.apply();

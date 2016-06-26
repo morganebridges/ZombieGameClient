@@ -1,20 +1,19 @@
 package com.fourninenine.zombiegameclient.models;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.orm.SugarRecord;
-import com.orm.dsl.Table;
 
 /**
  * Created by morganebridges on 5/28/16.
- */ @Table
-    public class User extends SugarRecord{
+ */
+    public class User{
+    private long id;
     private long clientKey;
     private String name;
     private double latitude;
     private double longitude;
-    public User(String name, long clientKey, double latitude, double longitude){
+    public User(String name, long id, double latitude, double longitude){
+        this.id = id;
         this.name = name;
-        this.clientKey = clientKey;
         this.latitude = latitude;
         this.longitude = longitude;
     }
@@ -63,5 +62,9 @@ import com.orm.dsl.Table;
     }
     public LatLng getLocation(){
         return new LatLng(latitude, longitude);
+    }
+
+    public long getId() {
+        return id;
     }
 }

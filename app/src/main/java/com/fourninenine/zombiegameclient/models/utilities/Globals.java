@@ -83,14 +83,8 @@ public class Globals {
     public static User getUser(){
         Context appContext = LoginActivity.getAppContext();
         SharedPreferences prefs = appContext.getSharedPreferences("prefs", 0);
-        List<User> users = User.find(User.class, "CLIENT_KEY=?", prefs.getLong("clientKey", -1)+"");
-        Iterator<User> usersAll =  User.findAll(User.class);
-        while(usersAll.hasNext()){}
         User user = new User("POOP", 112, 45.2, -95.1);
 
         return user;
-    }
-    public static Iterator<User> getOnlyUser(){
-        return User.findAll(User.class);
     }
 }

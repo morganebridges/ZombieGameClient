@@ -1,31 +1,29 @@
 package com.fourninenine.zombiegameclient.models;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.orm.SugarRecord;
-import com.orm.dsl.Table;
 
 /**
  * Created by morganebridges on 6/4/16.
  */
-@Table
-public class Zombie extends SugarRecord {
+
+public class Zombie {
     double latitude;
     double longitude;
     int hp;
-    long zombieKey;
+    long id;
 
-    public Zombie(double latitude, double longitude, int hp, long key) {
+    public Zombie(long id, double latitude, double longitude, int hp) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.hp = hp;
-        this.zombieKey = key;
+        this.id = id;
     }
 
 
     public LatLng getLocation(){
         return new LatLng(latitude, longitude);
     }
-    public long getKey(){
-        return zombieKey;
+    public long getId(){
+        return id;
     }
 }

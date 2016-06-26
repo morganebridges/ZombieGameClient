@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.support.multidex.MultiDexApplication;
 
 import com.fourninenine.zombiegameclient.models.utilities.Globals;
-import com.orm.SugarContext;
 
 /**
  * Created by morganebridges on 6/4/16.
@@ -21,7 +20,6 @@ public class MyApp extends MultiDexApplication {
     @Override
     public void onCreate(){
         super.onCreate();
-        SugarContext.init(this);
         context = this;
 
         Intent loginIntent = new Intent(this, LoginActivity.class);
@@ -32,7 +30,6 @@ public class MyApp extends MultiDexApplication {
     @Override
     public void onTerminate(){
         super.onTerminate();
-        SugarContext.terminate();
     }
 
     public static Context getAppContext() throws IllegalStateException{

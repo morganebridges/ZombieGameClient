@@ -64,12 +64,9 @@ dependencies {
     compile 'io.reactivex:rxjava:1.1.3'
     compile 'io.reactivex:rxandroid:1.1.0'
 
-    //Sugar ORM
-    compile 'com.github.satyan:sugar:1.4'
 
     compile 'org.springframework.android:spring-android-rest-template:1.0.1.RELEASE'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.3.2'
-    compile 'com.google.code.gson:gson:2.6.2'
+
 
     // GCM/Firebase/Play Services libs
     compile 'com.google.android.gms:play-services:9.0.2'

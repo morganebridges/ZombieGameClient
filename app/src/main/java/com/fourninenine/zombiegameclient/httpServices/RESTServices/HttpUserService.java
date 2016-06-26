@@ -118,7 +118,6 @@ public class HttpUserService implements RESTUserInterface {
                 ArrayList<Zombie> zombies = response.body();
                 Iterator<Zombie> zombIt= zombies.iterator();
                 while(zombIt.hasNext()){
-                    Zombie.save(zombIt.next());
                 }
             }
 
