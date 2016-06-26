@@ -61,7 +61,7 @@ public class LoginActivity extends AppCompatActivity{
      * @return
      */
     private void login() {
-        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences("prefs", MODE_PRIVATE);
         long clientKey = -1;
         if(preferences.contains("clientKey"))
             clientKey = preferences.getLong("clientKey", -1);
@@ -102,6 +102,7 @@ public class LoginActivity extends AppCompatActivity{
                 SharedPreferences.Editor editor = preferences.edit();
 
                 editor.putLong("clientKey", user.getClientKey());
+                editor.apply();
                 editor.apply();
 
             } else System.out.println("User null after login"); if (Globals.checkPlayServices()) {
