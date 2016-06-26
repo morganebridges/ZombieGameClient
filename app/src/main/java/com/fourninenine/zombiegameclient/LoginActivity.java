@@ -19,6 +19,9 @@ import com.fourninenine.zombiegameclient.models.utilities.DatabaseHelper;
 import com.fourninenine.zombiegameclient.models.utilities.Globals;
 import com.fourninenine.zombiegameclient.services.RegistrationIntentService;
 import com.orm.SugarContext;
+
+import java.util.Iterator;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -102,6 +105,8 @@ public class LoginActivity extends AppCompatActivity{
                 //edit system prefs to put our UID in persistent storage.
                 SharedPreferences.Editor editor = preferences.edit();
                 User.save(user);
+                Iterator<User> userIteratorUser = User.findAll(User.class);
+
                 editor.putLong("clientKey", user.getClientKey());
                 editor.apply();
 
