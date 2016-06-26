@@ -67,4 +67,8 @@ import com.google.android.gms.maps.model.LatLng;
     public long getId() {
         return id;
     }
+
+    public static User getUser() {
+        return new User();
+    }
 }
