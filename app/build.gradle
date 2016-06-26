@@ -31,9 +31,8 @@ android {
         exclude 'META-INF/NOTICE'
         exclude 'META-INF/notice.txt'
         exclude 'META-INF/LICENSE-FIREBASE.txt'
-
-
     }
+
     testOptions {
         unitTests.returnDefaultValues = true
     }
@@ -42,9 +41,6 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-
-    //for using GCM
-    //compile "com.google.android.gms:play-services-gcm:9.0.2"
 
     // Android 1st party libs
     compile 'com.android.support:appcompat-v7:23.4.0'
@@ -72,9 +68,11 @@ dependencies {
     compile 'com.google.code.gson:gson:2.6.2'
 
     // GCM/Firebase/Play Services libs
-    compile 'com.google.android.gms:play-services:9.0.2'
-    compile 'com.google.android.gms:play-services-auth:9.0.2'
     compile 'com.firebase:firebase-client-android:2.3.1'
+    compile 'com.google.android.gms:play-services-auth:9.0.2'
+    compile 'com.google.android.gms:play-services-gcm:9.0.2'
+    compile 'com.google.android.gms:play-services-location:9.0.2'
+    compile 'com.google.android.gms:play-services-maps:9.0.2'
 
     // testing libs
     androidTestCompile 'org.testng:testng:6.9.6'
