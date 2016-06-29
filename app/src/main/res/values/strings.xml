@@ -26,4 +26,5 @@
     <string name="user_ammo">ammo</string>
     <string name="user_serum">serum</string>
     <string name="user_gcmid">gcmId</string>
+    <string name="title_activity_maps">Map</string>
 </resources>

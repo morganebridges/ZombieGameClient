@@ -30,6 +30,7 @@ import com.fourninenine.zombiegameclient.LoginActivity;
 import com.fourninenine.zombiegameclient.R;
 import com.fourninenine.zombiegameclient.httpServices.RESTServices.HttpUserService;
 import com.fourninenine.zombiegameclient.models.User;
+import com.fourninenine.zombiegameclient.models.dto.UserActionDto;
 import com.fourninenine.zombiegameclient.models.utilities.Globals;
 import com.google.android.gms.gcm.GcmListenerService;
 
@@ -53,7 +54,8 @@ public class    MyGCMListenerService extends GcmListenerService {
 
 
         HttpUserService userService = new HttpUserService();
-        userService.update(User.getUser());
+        User user = User.getUser();
+        userService.update(new UserActionDto(user.getId(), user.getLatitude(), user.getLongitude(), UserActionDto.Action.NOTHING));
 
         if (from.startsWith("/topics/")) {
             // message received from some topic.

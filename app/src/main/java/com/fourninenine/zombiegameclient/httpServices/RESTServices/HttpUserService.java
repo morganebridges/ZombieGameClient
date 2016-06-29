@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import com.fourninenine.zombiegameclient.httpServices.RESTInterfaces.RESTUserInterface;
 import com.fourninenine.zombiegameclient.models.User;
 import com.fourninenine.zombiegameclient.models.Zombie;
+import com.fourninenine.zombiegameclient.models.dto.UserActionDto;
 import com.fourninenine.zombiegameclient.models.utilities.Globals;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -103,11 +104,9 @@ public class HttpUserService implements RESTUserInterface {
     }
 
     @Override
-    public Call<ArrayList<Zombie>> update(@Body User user) {
-        Call<ArrayList<Zombie>> call = apiService.update(user);
-        return call;
+    public Call<ArrayList<Zombie>> update(@Body UserActionDto userActionDto) {
+        return null;
     }
-
 
     @Override
     public Call<User> createUser(@Body User user) {

@@ -5,11 +5,27 @@ package com.fourninenine.zombiegameclient.models.dto;
  */
 public class UserActionDto {
     long id;
-    long latitude;
-    long longitude;
+    double latitude;
+    double longitude;
     int action;
     long targetId = -1;
     Object additionalParam = null;
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
 
     /**
      * Generate the dto to send to the server.  If the update includes an action that
@@ -20,7 +36,7 @@ public class UserActionDto {
      * @param longitude The longitude of the user
      * @param action An inner enum representing the action the user is taking.
      */
-    public UserActionDto(long id, long latitude, long longitude, Action action){
+    public UserActionDto(long id, double latitude, double longitude, Action action){
         this.id = id;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -35,7 +51,7 @@ public class UserActionDto {
         this.additionalParam = additionalParam;
     }
 
-    public enum Action {
+    public static  enum Action {
         NOTHING (0),
         ATTACK (1),
         SALVAGE (2);
