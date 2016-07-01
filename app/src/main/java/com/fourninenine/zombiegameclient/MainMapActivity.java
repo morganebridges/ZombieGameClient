@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.fourninenine.zombiegameclient.httpServices.RESTInterfaces.RESTUserInterface;
@@ -19,11 +20,13 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
@@ -33,7 +36,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainMapActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class MainMapActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener{
 
     static GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
@@ -76,30 +79,22 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
         //Add a marker to my last location dnd center the camera.
         LocationListener locationListener;
         LocationRequest request = new LocationRequest().setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        while(mLastLocation == null){
-            System.out.println("Still null");
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        //mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
-        }
 
         // requestLocationUpdates(mGoogleApiClient, request, locationListener);
-
-
-        LatLng lastLatLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-        mMap.addMarker(new MarkerOptions().position(lastLatLng).title("My Last Location"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(lastLatLng));
-        updateMap();
-        System.out.println("Past updating the map");
     }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) throws SecurityException{
 
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        while (mLastLocation == null) {
+         while (mLastLocation == null) {
+           //wait(500);
            System.out.println("No Location Found");
         }
+        user.setLocation(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
+        updateMap();
     }
 
     @Override
@@ -133,7 +128,6 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
     private void updateMap(){
         //for now we are going to have this hard coded for ease of testing
         UserActionDto actionDt;
-        user.setLocation(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
         RESTUserInterface userService = new HttpUserService();
         UserActionDto userAction = new UserActionDto(user.getId(), user.getLatitude(), user.getLongitude(), UserActionDto.Action.NOTHING);
         Call<ArrayList<Zombie>> updateCall = userService.update(userAction);
@@ -147,15 +141,16 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
                 ArrayList<Zombie> zombies = response.body();
 
                 Iterator<Zombie> zombIt= zombies.iterator();
-                drawService.placeZombies(zombIt);
+                placeZombies(zombIt);
             }
             @Override
             public void onFailure(Call<ArrayList<Zombie>> call, Throwable t) {
                 System.out.println("ERROR");
-                throw new IllegalStateException("An error was encountered with the API call");
+                //throw new IllegalStateException("An error was encountered with the API call");
 
             }
         });
+
 
         System.out.println("Updated map.");
 
@@ -166,6 +161,33 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
 
     }
     public static GoogleMap getMap(){
+        return mMap;
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        Log.d("On location change", "ON LOCATION CHANGE");
+        mLastLocation = location;
+    }
+    public GoogleMap placeZombies(Iterator<Zombie> zombIt){
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        MarkerOptions userMarker = new MarkerOptions().position(user.getLocation()).title(user.getName());
+        mMap.addMarker(userMarker);
+        builder.include(user.getLocation());
+        while(zombIt.hasNext()){
+            Zombie zom = zombIt.next();
+            MarkerOptions marker = new MarkerOptions().position(zom.getLocation()).title("Zombie");
+            mMap.addMarker(marker);
+            builder.include(zom.getLocation());
+        }
+        MarkerOptions marker = new MarkerOptions().position(user.getLocation()).title("User location");
+        mMap.addMarker(marker);
+        builder.include(user.getLocation());
+        LatLngBounds bounds = builder.build();
+        int padding = 6; // offset from edges of the map in pixels
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+
+        mMap.moveCamera(cu);
         return mMap;
     }
 }

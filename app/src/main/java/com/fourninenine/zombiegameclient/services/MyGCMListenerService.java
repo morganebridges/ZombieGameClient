@@ -55,13 +55,12 @@ public class    MyGCMListenerService extends GcmListenerService {
 
         HttpUserService userService = new HttpUserService();
         User user = User.getUser();
-        userService.update(new UserActionDto(user.getId(), user.getLatitude(), user.getLongitude(), UserActionDto.Action.NOTHING));
-
+        /*userService.update(new UserActionDto(user.getId(), user.getLatitude(), user.getLongitude(), UserActionDto.Action.NOTHING));
         if (from.startsWith("/topics/")) {
             // message received from some topic.
         } else {
             // normal downstream message.
-        }
+        }*/
         sendNotification(message);
         // [START_EXCLUDE]
         /**

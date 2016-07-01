@@ -9,12 +9,14 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.fourninenine.zombiegameclient.httpServices.RESTServices.HttpUserService;
 import com.fourninenine.zombiegameclient.models.User;
+import com.fourninenine.zombiegameclient.models.utilities.ApplicationContextProvider;
 import com.fourninenine.zombiegameclient.models.utilities.DatabaseHelper;
 import com.fourninenine.zombiegameclient.models.utilities.Globals;
 import com.fourninenine.zombiegameclient.services.RegistrationIntentService;
@@ -61,8 +63,8 @@ public class LoginActivity extends AppCompatActivity{
      * @return
      */
     private void login() {
-        SharedPreferences preferences = getSharedPreferences("prefs", MODE_PRIVATE);
-        long clientKey = -1;
+        SharedPreferences preferences = context.getSharedPreferences(context.getString(R.string.user_shared_preferences), MODE_PRIVATE);
+        long clientKey = 4;
         if(preferences.contains("clientKey"))
             clientKey = preferences.getLong("clientKey", -1);
 
@@ -72,7 +74,9 @@ public class LoginActivity extends AppCompatActivity{
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
+                User.save(response.body());
                 asyncLogin(response);
+
 
             }
 
@@ -82,24 +86,15 @@ public class LoginActivity extends AppCompatActivity{
         });
     }
 
-    private User asyncLogin(Response<User> asyncResponse){
-        SharedPreferences preferences = getSharedPreferences("prefs", MODE_PRIVATE);
-
+    private User asyncLogin(Response<User> response){
+        SharedPreferences preferences = context.getSharedPreferences(context.getString(R.string.user_shared_preferences), MODE_PRIVATE);
         User user = null;
-        Response<User> response = null;
-        try {
-            response = asyncResponse;
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("There was an error retrieving user object from server");
-        }
+
         if(response != null){
             user = response.body();
             System.out.println("break here");
             if(user != null){
-                Globals.setCurrentUser(user);
-                user.save();
-
+                User.save(user);
             } else System.out.println("User null after login"); if (Globals.checkPlayServices()) {
                 // Start IntentService to register this application with GCM.
 
@@ -107,6 +102,7 @@ public class LoginActivity extends AppCompatActivity{
                 startService(intent);
             }
         }else{
+
             System.out.println("There was a problem with the response object");
 
         }

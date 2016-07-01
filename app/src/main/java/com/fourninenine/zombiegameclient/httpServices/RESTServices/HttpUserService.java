@@ -105,7 +105,7 @@ public class HttpUserService implements RESTUserInterface {
 
     @Override
     public Call<ArrayList<Zombie>> update(@Body UserActionDto userActionDto) {
-        return null;
+        return apiService.update(userActionDto);
     }
 
     @Override

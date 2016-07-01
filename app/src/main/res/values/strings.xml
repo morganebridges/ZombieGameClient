@@ -18,7 +18,7 @@
     <string name="PROJECT_ID">zed-reckoning-51952499</string>
 
     //User Strings
-    <string name="user_shared_preferences">"userPrefs</string>
+    <string name="user_shared_preferences">userPrefs</string>
     <string name="user_id">id</string>
     <string name="user_name">name</string>
     <string name="user_longitude">longitude</string>

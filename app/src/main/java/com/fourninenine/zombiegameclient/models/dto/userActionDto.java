@@ -9,7 +9,7 @@ public class UserActionDto {
     double longitude;
     int action;
     long targetId = -1;
-    Object additionalParam = null;
+    //Object additionalParam = null;
 
     public double getLatitude() {
         return latitude;
@@ -48,7 +48,7 @@ public class UserActionDto {
     }
 
     public void setAdditionalParam(Object additionalParam) {
-        this.additionalParam = additionalParam;
+        //this.additionalParam = additionalParam;
     }
 
     public static  enum Action {

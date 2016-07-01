@@ -16,10 +16,12 @@ package com.fourninenine.zombiegameclient.services; /**
 import com.fourninenine.zombiegameclient.LoginActivity;
 import com.fourninenine.zombiegameclient.R;
 import com.fourninenine.zombiegameclient.models.User;
+import com.fourninenine.zombiegameclient.models.utilities.ApplicationContextProvider;
 import com.fourninenine.zombiegameclient.models.utilities.Globals;
 
 
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -48,7 +50,7 @@ public class RegistrationIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences sharedPreferences = ApplicationContextProvider.getAppContext().getSharedPreferences("prefs", MODE_PRIVATE);
 
         try {
             // [START register_for_gcm]
@@ -76,6 +78,9 @@ public class RegistrationIntentService extends IntentService {
                 System.out.println("spinning");
             }
             Log.i(TAG, "GCM Registration Token: " + token);
+
+            //Save the token to your user's 'model'
+            sharedPreferences.edit().putString("gcmId", token).apply();
 
             // TODO: Implement this method to send any registration to your app's servers.
             sendRegistrationToServer(token);
@@ -114,8 +119,9 @@ public class RegistrationIntentService extends IntentService {
     public void sendRegistrationToServer(String token) {
         String authorizedEntity =  R.string.PROJECT_ID + "";
         String scope = "GCM";
-        SharedPreferences preferences = LoginActivity.getAppContext().getSharedPreferences("prefs", MODE_PRIVATE);
-        long clientKey = preferences.getLong("clientKey", -1);
+        Context context = LoginActivity.getAppContext();
+        SharedPreferences preferences = context.getSharedPreferences(context.getString(R.string.user_shared_preferences), MODE_PRIVATE);
+        long clientKey = preferences.getLong("id", -1);
         System.out.println("current client key");
 
 
@@ -125,7 +131,6 @@ public class RegistrationIntentService extends IntentService {
         regCall.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
-                response.body().save();
                 System.out.println("You have successfully registered for messages!!");
 
             }

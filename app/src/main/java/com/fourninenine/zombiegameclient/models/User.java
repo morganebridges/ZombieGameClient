@@ -57,21 +57,21 @@ public class User{
         return  new User(name, id, latitude, longitude, serum, ammo, gcmId);
     }
 
-    public void save() {
+    public static void save(User user) {
         Context context = ApplicationContextProvider.getAppContext();
         SharedPreferences preferences = context.getSharedPreferences(
                 context.getString(R.string.user_shared_preferences), Context.MODE_PRIVATE);
 
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putLong(context.getString(R.string.user_id), this.id);
-        editor.putString(context.getString(R.string.user_name), this.name);
+        editor.putLong(context.getString(R.string.user_id), user.id);
+        editor.putString(context.getString(R.string.user_name), user.name);
         editor.putLong(context.getString(R.string.user_latitude),
-                Double.doubleToRawLongBits(this.latitude));
+                Double.doubleToRawLongBits(user.latitude));
         editor.putLong(context.getString(R.string.user_longitude),
-                Double.doubleToRawLongBits(this.longitude));
-        editor.putInt(context.getString(R.string.user_serum), this.serum);
-        editor.putInt(context.getString(R.string.user_ammo), this.ammo);
-        editor.putString(context.getString(R.string.user_gcmid), this.gcmId);
+                Double.doubleToRawLongBits(user.longitude));
+        editor.putInt(context.getString(R.string.user_serum), user.serum);
+        editor.putInt(context.getString(R.string.user_ammo), user.ammo);
+        editor.putString(context.getString(R.string.user_gcmid), user.gcmId);
 
         editor.apply();
     }

@@ -33,6 +33,9 @@ public class MapDrawingService {
             map.addMarker(marker);
             builder.include(zom.getLocation());
         }
+        MarkerOptions marker = new MarkerOptions().position(user.getLocation()).title("User location");
+        map.addMarker(marker);
+        builder.include(user.getLocation());
         LatLngBounds bounds = builder.build();
         int padding = 6; // offset from edges of the map in pixels
         CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
