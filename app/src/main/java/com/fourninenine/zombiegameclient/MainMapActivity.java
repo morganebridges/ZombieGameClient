@@ -1,10 +1,12 @@
 package com.fourninenine.zombiegameclient;
 
+import android.content.DialogInterface;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 
@@ -13,6 +15,7 @@ import com.fourninenine.zombiegameclient.httpServices.RESTServices.HttpUserServi
 import com.fourninenine.zombiegameclient.models.User;
 import com.fourninenine.zombiegameclient.models.Zombie;
 import com.fourninenine.zombiegameclient.models.dto.UserActionDto;
+import com.fourninenine.zombiegameclient.models.utilities.Geomath;
 import com.fourninenine.zombiegameclient.services.LocationListenerService;
 import com.fourninenine.zombiegameclient.services.MapDrawingService;
 import com.google.android.gms.common.ConnectionResult;
@@ -25,6 +28,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -42,7 +46,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     User user;
-    ArrayList<Zombie> zombieList;
+    ArrayList<Zombie> zombies;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,7 +142,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
             public void onResponse(Call<ArrayList<Zombie>> call, Response<ArrayList<Zombie>> response) {
                 System.out.println("On success callback");
 
-                ArrayList<Zombie> zombies = response.body();
+                zombies = response.body();
 
                 Iterator<Zombie> zombIt= zombies.iterator();
                 placeZombies(zombIt);
@@ -158,8 +162,40 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
     }
 
     public void killNearest(View view) {
+        Zombie closest = null;
+        if(zombies.size() == 0 ){
+            showDialog("There are no zombies around right now, sorry.");
+
+        }
+
+        double minDistance = Double.MAX_VALUE;
+        for(int i = 0; i < zombies.size(); i++){
+        double thisDistance = Geomath.getDistance(zombies.get(i).getLocation().latitude, zombies.get(i).getLocation().longitude,
+                user.getLocation().latitude, user.getLocation().longitude, "M");
+            if(thisDistance< minDistance)
+                closest = zombies.get(i);
+            System.out.println("This distance: " + thisDistance);
+            System.out.println("Min distance: " + minDistance);
+        }
+        if(closest != null)
+            zombies.remove(closest);
+        placeZombies(zombies.iterator());
 
     }
+
+    private void showDialog(String message) {
+        AlertDialog alertDialog = new AlertDialog.Builder(MainMapActivity.this).create();
+        alertDialog.setTitle("Alert");
+        alertDialog.setMessage(message);
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
+    }
+
     public static GoogleMap getMap(){
         return mMap;
     }
@@ -169,25 +205,42 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
         Log.d("On location change", "ON LOCATION CHANGE");
         mLastLocation = location;
     }
+
+
     public GoogleMap placeZombies(Iterator<Zombie> zombIt){
+        mMap.clear();
+
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
-        MarkerOptions userMarker = new MarkerOptions().position(user.getLocation()).title(user.getName());
-        mMap.addMarker(userMarker);
+        //MarkerOptions userMarker = new MarkerOptions().position(user.getLocation()).title(user.getName());
+        //mMap.addMarker(userMarker);
         builder.include(user.getLocation());
         while(zombIt.hasNext()){
             Zombie zom = zombIt.next();
-            MarkerOptions marker = new MarkerOptions().position(zom.getLocation()).title("Zombie");
+            MarkerOptions marker = new MarkerOptions()
+                    .position(zom.getLocation())
+                    .title("Zombie");
+
             mMap.addMarker(marker);
             builder.include(zom.getLocation());
         }
-        MarkerOptions marker = new MarkerOptions().position(user.getLocation()).title("User location");
-        mMap.addMarker(marker);
+        //MarkerOptions marker = new MarkerOptions().position(user.getLocation()).title("User location");
+        //mMap.addMarker(marker);
+        MarkerOptions userMarker = new MarkerOptions()
+                .position(user.getLocation())
+                .title(user.getName())
+                .anchor(0.5f, 0.5f)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.crosshairs));
+        mMap.addMarker(userMarker);
+
         builder.include(user.getLocation());
         LatLngBounds bounds = builder.build();
-        int padding = 6; // offset from edges of the map in pixels
-        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
 
-        mMap.moveCamera(cu);
+        int padding = 20; // offset from edges of the map in pixels
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+        CameraUpdate userUpdate = CameraUpdateFactory.newLatLngZoom(user.getLocation(), 14f);
+
+        mMap.moveCamera(userUpdate);
+
         return mMap;
     }
 }
