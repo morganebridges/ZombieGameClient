@@ -12,8 +12,7 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.fourninenine.zombiegameclient.MainMapActivity"
-        tools:layout="@layout/activity_main_map" />
+        tools:context="com.fourninenine.zombiegameclient.MainMapActivity" />
 
     <Button
         android:id="@+id/startActivityButton"
@@ -30,9 +29,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Small Text"
+        android:text="Total Kills:"
         android:id="@+id/textView"
         android:layout_alignParentTop="true"
-        android:layout_alignStart="@+id/startActivityButton" />
+        android:layout_alignParentEnd="true"
+        android:width="250px" />
 
 </RelativeLayout>

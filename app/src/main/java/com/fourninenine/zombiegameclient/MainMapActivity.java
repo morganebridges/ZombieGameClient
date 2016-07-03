@@ -1,6 +1,8 @@
 package com.fourninenine.zombiegameclient;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,6 +17,7 @@ import com.fourninenine.zombiegameclient.httpServices.RESTServices.HttpUserServi
 import com.fourninenine.zombiegameclient.models.User;
 import com.fourninenine.zombiegameclient.models.Zombie;
 import com.fourninenine.zombiegameclient.models.dto.UserActionDto;
+import com.fourninenine.zombiegameclient.models.utilities.ApplicationContextProvider;
 import com.fourninenine.zombiegameclient.models.utilities.Geomath;
 import com.fourninenine.zombiegameclient.services.LocationListenerService;
 import com.fourninenine.zombiegameclient.services.MapDrawingService;
@@ -47,12 +50,15 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
     private Location mLastLocation;
     User user;
     ArrayList<Zombie> zombies;
+    Context context = ApplicationContextProvider.getAppContext();
+    SharedPreferences preferences = context.getSharedPreferences(context.getString(R.string.user_shared_preferences), MODE_PRIVATE);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_map);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        //Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -72,7 +78,6 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
      * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
      * If Google Play services is not installed on the device, the user will be prompted to install
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
@@ -83,10 +88,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
         //Add a marker to my last location dnd center the camera.
         LocationListener locationListener;
         LocationRequest request = new LocationRequest().setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        //mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
-
-        // requestLocationUpdates(mGoogleApiClient, request, locationListener);
     }
 
     @Override
@@ -165,7 +167,8 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
         Zombie closest = null;
         if(zombies.size() == 0 ){
             showDialog("There are no zombies around right now, sorry.");
-
+            int tempKills = preferences.getInt(context.getString(R.string.user_total_kills), 0);
+            preferences.edit().putInt(context.getString(R.string.user_total_kills), (++tempKills)).apply();
         }
 
         double minDistance = Double.MAX_VALUE;
@@ -184,7 +187,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
     }
 
     private void showDialog(String message) {
-        AlertDialog alertDialog = new AlertDialog.Builder(MainMapActivity.this).create();
+       AlertDialog alertDialog = new AlertDialog.Builder(MainMapActivity.this).create();
         alertDialog.setTitle("Alert");
         alertDialog.setMessage(message);
         alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",

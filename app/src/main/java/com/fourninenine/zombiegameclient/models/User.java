@@ -19,8 +19,9 @@ public class User{
     private int serum;
     private int ammo;
     private String gcmId;
+    private int totalKills;
 
-    public User(String name, long id, double latitude, double longitude, int serum, int ammo, String gcmId){
+    public User(String name, long id, double latitude, double longitude, int serum, int ammo, String gcmId, int totalKills){
         this.id = id;
         this.name = name;
         this.latitude = latitude;
@@ -28,6 +29,8 @@ public class User{
         this.serum = serum;
         this.ammo = ammo;
         this.gcmId = gcmId;
+        this.totalKills = totalKills;
+
     }
 
     public User(){}
@@ -53,8 +56,10 @@ public class User{
                 context.getString(R.string.user_ammo), -1);
         String gcmId = preferences.getString(
                 context.getString(R.string.user_gcmid), "");
+        int totalKills = preferences.getInt(
+                context.getString(R.string.user_total_kills), 0);
 
-        return  new User(name, id, latitude, longitude, serum, ammo, gcmId);
+        return  new User(name, id, latitude, longitude, serum, ammo, gcmId, totalKills);
     }
 
     public static void save(User user) {
@@ -72,6 +77,7 @@ public class User{
         editor.putInt(context.getString(R.string.user_serum), user.serum);
         editor.putInt(context.getString(R.string.user_ammo), user.ammo);
         editor.putString(context.getString(R.string.user_gcmid), user.gcmId);
+        editor.putInt(context.getString(R.string.user_total_kills), user.totalKills);
 
         editor.apply();
     }
