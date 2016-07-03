@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Zombie Game Client</string>
+    <string name="app_name">Zed Reckoning</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_main_map">Map</string>
     <string name="attackButton">Kill</string>
