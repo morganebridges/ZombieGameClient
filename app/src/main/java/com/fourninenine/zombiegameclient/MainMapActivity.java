@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import com.fourninenine.zombiegameclient.httpServices.RESTInterfaces.RESTUserInterface;
 import com.fourninenine.zombiegameclient.httpServices.RESTServices.HttpUserService;
@@ -165,15 +166,18 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
 
     public void killNearest(View view) {
         Zombie closest = null;
+        int tempKills = preferences.getInt(context.getString(R.string.user_total_kills), 0);
+        preferences.edit().putInt(context.getString(R.string.user_total_kills), (++tempKills)).apply();
+        user.setTotalKills(tempKills);
+        User.save(user);
         if(zombies.size() == 0 ){
             showDialog("There are no zombies around right now, sorry.");
-            int tempKills = preferences.getInt(context.getString(R.string.user_total_kills), 0);
-            preferences.edit().putInt(context.getString(R.string.user_total_kills), (++tempKills)).apply();
+
         }
 
         double minDistance = Double.MAX_VALUE;
         for(int i = 0; i < zombies.size(); i++){
-        double thisDistance = Geomath.getDistance(zombies.get(i).getLocation().latitude, zombies.get(i).getLocation().longitude,
+            double thisDistance = Geomath.getDistance(zombies.get(i).getLocation().latitude, zombies.get(i).getLocation().longitude,
                 user.getLocation().latitude, user.getLocation().longitude, "M");
             if(thisDistance< minDistance)
                 closest = zombies.get(i);
@@ -183,7 +187,9 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
         if(closest != null)
             zombies.remove(closest);
         placeZombies(zombies.iterator());
-
+        TextView totalKillsView = (TextView) findViewById(R.id.totalKillsView);
+        String updateString =  String.format(context.getString(R.string.map_total_kills_display), tempKills);
+        totalKillsView.setText(updateString);
     }
 
     private void showDialog(String message) {
@@ -205,6 +211,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
 
     @Override
     public void onLocationChanged(Location location) {
+        System.out.println("Location has Changed.");
         Log.d("On location change", "ON LOCATION CHANGE");
         mLastLocation = location;
     }

@@ -28,4 +28,11 @@
     <string name="user_gcmid">gcmId</string>
     <string name="user_total_kills">totalKills</string>
     <string name="title_activity_maps">Map</string>
+
+    //Display Strings for UI map activity
+    <string name="map_total_kills_initial">Total Kills:</string>
+    <string name="map_total_kills_display">Total Kills: %d</string>
+
+
+
 </resources>

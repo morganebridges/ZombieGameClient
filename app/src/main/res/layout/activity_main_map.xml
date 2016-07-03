@@ -29,10 +29,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Total Kills:"
-        android:id="@+id/textView"
+        android:text="@string/map_total_kills_initial"
+        android:id="@+id/totalKillsView"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:width="250px" />
+        android:width="190px"
+        android:layout_alignParentBottom="true" />
 
 </RelativeLayout>

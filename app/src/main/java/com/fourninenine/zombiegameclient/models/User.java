@@ -147,4 +147,8 @@ public class User{
     public void setGcmId(String gcmId) {
         this.gcmId = gcmId;
     }
+
+    public void setTotalKills(int totalKills) {
+        this.totalKills = totalKills;
+    }
 }
