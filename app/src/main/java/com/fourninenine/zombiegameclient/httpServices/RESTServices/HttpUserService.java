@@ -109,11 +109,13 @@ public class HttpUserService implements RESTUserInterface {
     }
 
     @Override
+    public Call<Zombie> attack(@Body UserActionDto userActionDto) {
+        return apiService.attack(userActionDto);
+    }
+
+    @Override
     public Call<User> createUser(@Body User user) {
         return null;
     }
 
-    public static void run() throws Exception {
-
-    }
 }

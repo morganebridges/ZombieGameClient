@@ -38,5 +38,7 @@ public interface RESTUserInterface {
     @POST("user/update")
     Call<ArrayList<Zombie>> update(@Body UserActionDto userActionDto);
 
+    @POST("user/attack")
+    Call<Zombie> attack(@Body UserActionDto userActionDto);
 
 }

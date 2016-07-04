@@ -151,4 +151,8 @@ public class User{
     public void setTotalKills(int totalKills) {
         this.totalKills = totalKills;
     }
+
+    public int getTotalKills() {
+        return totalKills;
+    }
 }

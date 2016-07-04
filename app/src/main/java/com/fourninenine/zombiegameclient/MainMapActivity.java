@@ -58,6 +58,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        user = User.getUser();
         setContentView(R.layout.activity_main_map);
         //Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -72,6 +73,12 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
                     .addApi(LocationServices.API)
                     .build();
         }
+        mGoogleApiClient.connect();
+        //Set the user specific parts of the UI upon setup.
+        String totalKillsString =  String.format(context.getString(R.string.map_total_kills_display), user.getTotalKills());
+        ((TextView) findViewById(R.id.mapTotalKillsView)).setText(totalKillsString);
+        String nameString = user.getName();
+        ((TextView) findViewById(R.id.mapNameField)).setText(nameString);
     }
 
 
@@ -117,7 +124,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
     protected void onStart(){
         mGoogleApiClient.connect();
         super.onStart();
-        user = User.getUser();
+
     }
     @Override
     protected void onStop(){
@@ -146,9 +153,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
                 System.out.println("On success callback");
 
                 zombies = response.body();
-
-                Iterator<Zombie> zombIt= zombies.iterator();
-                placeZombies(zombIt);
+                placeZombies();
             }
             @Override
             public void onFailure(Call<ArrayList<Zombie>> call, Throwable t) {
@@ -165,10 +170,10 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
     }
 
     public void killNearest(View view) {
+        HttpUserService userService = new HttpUserService();
+
         Zombie closest = null;
-        int tempKills = preferences.getInt(context.getString(R.string.user_total_kills), 0);
-        preferences.edit().putInt(context.getString(R.string.user_total_kills), (++tempKills)).apply();
-        user.setTotalKills(tempKills);
+
         User.save(user);
         if(zombies.size() == 0 ){
             showDialog("There are no zombies around right now, sorry.");
@@ -176,20 +181,33 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
         }
 
         double minDistance = Double.MAX_VALUE;
+        int zombieIndex = -1;
         for(int i = 0; i < zombies.size(); i++){
             double thisDistance = Geomath.getDistance(zombies.get(i).getLocation().latitude, zombies.get(i).getLocation().longitude,
                 user.getLocation().latitude, user.getLocation().longitude, "M");
-            if(thisDistance< minDistance)
+            if(thisDistance< minDistance){
+                minDistance = thisDistance;
                 closest = zombies.get(i);
+                zombieIndex = i;
+            }
             System.out.println("This distance: " + thisDistance);
             System.out.println("Min distance: " + minDistance);
         }
-        if(closest != null)
-            zombies.remove(closest);
-        placeZombies(zombies.iterator());
-        TextView totalKillsView = (TextView) findViewById(R.id.totalKillsView);
+        //after we've found the closest zombie
+        if(closest != null){
+            UserActionDto dto = new UserActionDto(user.getId(), user.getLatitude(), user.getLongitude(), UserActionDto.Action.ATTACK);
+            dto.setTarget(closest.getId());
+            Call<Zombie> zombieCall = userService.attack(dto);
+            resolveAttack(zombieCall, zombieIndex);
+            //zombies.remove(closest);
+        }
+        int tempKills = preferences.getInt(context.getString(R.string.user_total_kills), 0);
+        preferences.edit().putInt(context.getString(R.string.user_total_kills), (++tempKills)).apply();
+        user.setTotalKills(tempKills);
+        TextView totalKillsView = (TextView) findViewById(R.id.mapTotalKillsView);
         String updateString =  String.format(context.getString(R.string.map_total_kills_display), tempKills);
         totalKillsView.setText(updateString);
+        placeZombies();
     }
 
     private void showDialog(String message) {
@@ -217,7 +235,8 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
     }
 
 
-    public GoogleMap placeZombies(Iterator<Zombie> zombIt){
+    public GoogleMap placeZombies(){
+        Iterator<Zombie> zombIt = zombies.iterator();
         mMap.clear();
 
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
@@ -228,7 +247,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
             Zombie zom = zombIt.next();
             MarkerOptions marker = new MarkerOptions()
                     .position(zom.getLocation())
-                    .title("Zombie");
+                    .title("Zombie " + zom.getId());
 
             mMap.addMarker(marker);
             builder.include(zom.getLocation());
@@ -252,5 +271,30 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
         mMap.moveCamera(userUpdate);
 
         return mMap;
+    }
+    public Zombie resolveAttack(Call<Zombie> call, int zomIndex){
+        final int zombieIndex = zomIndex;
+        call.enqueue(new Callback<Zombie>() {
+
+            @Override
+            public void onResponse(Call<Zombie> call, Response<Zombie> response) {
+                System.out.println("On success callback");
+                Zombie zombie;
+                zombie = response.body();
+                if(!zombie.isAlive() && zombies.remove(zombieIndex) != null){
+                    placeZombies();
+                    return;
+                }
+                else System.out.println("Zombie not found in list");
+
+            }
+            @Override
+            public void onFailure(Call<Zombie> call, Throwable t) {
+                System.out.println("ERROR");
+                //throw new IllegalStateException("An error was encountered with the API call");
+
+            }
+        });
+        return null;
     }
 }

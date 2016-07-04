@@ -11,12 +11,14 @@ public class Zombie {
     double longitude;
     int hp;
     long id;
+    boolean alive;
 
-    public Zombie(long id, double latitude, double longitude, int hp) {
+    public Zombie(long id, double latitude, double longitude, int hp, boolean alive) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.hp = hp;
         this.id = id;
+        this.alive = alive;
     }
 
     public LatLng getLocation(){
@@ -25,5 +27,8 @@ public class Zombie {
 
     public long getId(){
         return id;
+    }
+    public boolean isAlive(){
+        return alive;
     }
 }
