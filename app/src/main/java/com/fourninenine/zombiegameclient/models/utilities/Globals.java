@@ -1,11 +1,14 @@
 package com.fourninenine.zombiegameclient.models.utilities;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
-import com.fourninenine.zombiegameclient.LoginActivity;
 import com.fourninenine.zombiegameclient.MyApp;
+import com.fourninenine.zombiegameclient.R;
 import com.fourninenine.zombiegameclient.models.User;
 import com.fourninenine.zombiegameclient.services.activityHelpers.GCMHelper;
 import com.google.android.gms.common.ConnectionResult;
@@ -69,7 +72,7 @@ public class Globals {
 
     public static boolean checkPlayServices() {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-        int resultCode = apiAvailability.isGooglePlayServicesAvailable(LoginActivity.getAppContext());
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(ApplicationContextProvider.getAppContext());
         if (resultCode != ConnectionResult.SUCCESS) {
             if (apiAvailability.isUserResolvableError(resultCode)) {
                System.out.println("error resolving user for google stuff");
@@ -84,4 +87,18 @@ public class Globals {
         User user = User.getUser();
         return user;
     }
+    public static void showDialog(String title, String message, Activity activity) {
+        AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
+        alertDialog.setTitle(title);
+        alertDialog.setMessage(message);
+        alertDialog.setIcon(R.drawable.zombiehand48);
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
+    }
 }
+

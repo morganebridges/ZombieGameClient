@@ -114,8 +114,8 @@ public class HttpUserService implements RESTUserInterface {
     }
 
     @Override
-    public Call<User> createUser(@Body User user) {
-        return null;
+    public Call<User> createUser(@Body String userName) {
+        return apiService.createUser(userName);
     }
 
 }

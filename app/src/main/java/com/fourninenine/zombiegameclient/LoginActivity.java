@@ -63,13 +63,20 @@ public class LoginActivity extends AppCompatActivity{
      * @return
      */
     private void login() {
+        User user;
         SharedPreferences preferences = context.getSharedPreferences(context.getString(R.string.user_shared_preferences), MODE_PRIVATE);
-        long clientKey = 4;
-        if(preferences.contains("clientKey"))
-            clientKey = preferences.getLong("clientKey", -1);
+        preferences.edit().putLong(context.getString(R.string.user_id), -1).apply();
+        if(preferences.getLong(context.getString(R.string.user_id), -1) != -1){
+            user = User.getUser();
+        }
+        else{
+            Globals.showDialog("New User","Choose a user name", LoginActivity.this);
+
+        }
+        user = new User();
 
         HttpUserService userService = new HttpUserService();
-        Call<User> call = userService.login(clientKey);
+        Call<User> call = userService.login(user.getId());
 
         call.enqueue(new Callback<User>() {
             @Override

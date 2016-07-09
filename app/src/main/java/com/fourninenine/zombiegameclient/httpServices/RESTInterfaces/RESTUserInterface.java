@@ -24,7 +24,7 @@ public interface RESTUserInterface {
     Call<User> findUserByName(@Query("name") String name);
 
     @POST("user/new")
-    Call<User> createUser(@Body User user);
+    Call<User> createUser(@Body String userName);
 
     @POST("getuser")
     Response<User> findUserByNameSynchronous(@Query("name") String name);

@@ -11,8 +11,8 @@ import com.google.android.gms.maps.model.LatLng;
  * A user model class with methods to retrieve and save itself to shared preferences
  */
 public class User{
-
-    private long id;
+    Context context = ApplicationContextProvider.getAppContext();
+    private long id = R.string.INVALID_VALUE;
     private String name;
     private double latitude;
     private double longitude;
@@ -22,7 +22,9 @@ public class User{
     private int totalKills;
 
     public User(String name, long id, double latitude, double longitude, int serum, int ammo, String gcmId, int totalKills){
-        this.id = id;
+        //only set an id if it is valid
+        if(id > 0)
+            this.id = id;
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -34,6 +36,10 @@ public class User{
     }
 
     public User(){}
+
+    public User(String username) {
+        this.name = username;
+    }
 
     // Utility methods
 
@@ -62,13 +68,15 @@ public class User{
         return  new User(name, id, latitude, longitude, serum, ammo, gcmId, totalKills);
     }
 
-    public static void save(User user) {
+    public static void save(User user) throws IllegalStateException{
+        if(user == null)
+            throw new IllegalStateException("User argument null at save method");
         Context context = ApplicationContextProvider.getAppContext();
         SharedPreferences preferences = context.getSharedPreferences(
                 context.getString(R.string.user_shared_preferences), Context.MODE_PRIVATE);
 
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putLong(context.getString(R.string.user_id), user.id);
+        editor.putLong(context.getString(R.string.user_id), user.getId());
         editor.putString(context.getString(R.string.user_name), user.name);
         editor.putLong(context.getString(R.string.user_latitude),
                 Double.doubleToRawLongBits(user.latitude));
@@ -154,5 +162,12 @@ public class User{
 
     public int getTotalKills() {
         return totalKills;
+    }
+
+    public static boolean isSavedUser(){
+        Context context = ApplicationContextProvider.getAppContext();
+        SharedPreferences preferences = context.getSharedPreferences(context.getString(R.string.user_shared_preferences), Context.MODE_PRIVATE);
+        //Globals.showDialog("New User","Choose a user name", LoginActivity.this);
+        return preferences.getLong(context.getString(R.string.user_id), -1) > 0;
     }
 }

@@ -1,5 +1,6 @@
 package com.fourninenine.zombiegameclient;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -208,7 +209,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
         HttpUserService userService = new HttpUserService();
         Zombie closest = null;
         if (zombies != null && zombies.size() == 0) {
-            showDialog("There are no zombies around right now, sorry.");
+            showDialog("Quiet...","There are no zombies around right now, sorry.");
             killBtn.setEnabled(true);
             return;
         }
@@ -244,10 +245,11 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
         populateMap();
     }
 
-    private void showDialog(String message) {
+    private void showDialog(String title, String message) {
         AlertDialog alertDialog = new AlertDialog.Builder(MainMapActivity.this).create();
         alertDialog.setTitle("Alert");
         alertDialog.setMessage(message);
+        alertDialog.setIcon(R.drawable.zombiehand48);
         alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -336,6 +338,19 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
 
         return mMap;
     }
+    /*public static void showDialog(String title, String message, Activity activity) {
+        AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
+        alertDialog.setTitle(title);
+        alertDialog.setMessage(message);
+        alertDialog.setIcon(R.drawable.zombiehand48);
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
+    }*/
     public Zombie resolveAttack(Call<Zombie> call, int zomIndex){
         final int zombieIndex = zomIndex;
         call.enqueue(new Callback<Zombie>() {
@@ -350,7 +365,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
                 }
                 //remove the zombie from the list
                 if(!zombie.isAlive() && zombies.remove(zombieIndex) != null){
-                    showDialog("You have destroyzed Zombie " + zombie.getId());
+                    showDialog("Killer","You have destroyzed Zombie " + zombie.getId());
                 }//else update the local zombie with the server's return object
                 else if(zombie.isAlive()){
                     zombies.remove(zombieIndex);
