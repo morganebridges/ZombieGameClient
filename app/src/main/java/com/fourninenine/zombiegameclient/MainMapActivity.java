@@ -1,16 +1,20 @@
 package com.fourninenine.zombiegameclient;
 
+import android.*;
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.util.LongSparseArray;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
@@ -21,10 +25,14 @@ import com.fourninenine.zombiegameclient.httpServices.RESTInterfaces.RESTUserInt
 import com.fourninenine.zombiegameclient.httpServices.RESTServices.HttpUserService;
 import com.fourninenine.zombiegameclient.models.User;
 import com.fourninenine.zombiegameclient.models.Zombie;
+import com.fourninenine.zombiegameclient.models.dto.ClientUpdateDto;
 import com.fourninenine.zombiegameclient.models.dto.UserActionDto;
 import com.fourninenine.zombiegameclient.models.utilities.ApplicationContextProvider;
 import com.fourninenine.zombiegameclient.models.utilities.Geomath;
+import com.fourninenine.zombiegameclient.models.utilities.Globals;
 import com.fourninenine.zombiegameclient.services.MapDrawingService;
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -44,7 +52,10 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -61,11 +72,16 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
     private Location mLastLocation;
     LocationRequest mLocationRequest;
     User user;
-    ArrayList<Zombie> zombies;
+    HashMap<Long, Zombie> zombies;
     Context context = ApplicationContextProvider.getAppContext();
     SharedPreferences preferences = context.getSharedPreferences(context.getString(R.string.user_shared_preferences), MODE_PRIVATE);
 
+    //Related to targetting zombies.
+    LongSparseArray<Marker> zombieMarkers;
+    long targetZombieId;
+
     LatLng targetLocation;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,11 +95,13 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
         createLocationRequest();
         // Create an instance of GoogleAPIClient.
         if (mGoogleApiClient == null) {
+            // ATTENTION: This "addApi(AppIndex.API)"was auto-generated to implement the App Indexing API.
+            // See https://g.co/AppIndexing/AndroidStudio for more information.
             mGoogleApiClient = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
                     .addApi(LocationServices.API)
-                    .build();
+                    .addApi(AppIndex.API).build();
         }
         mGoogleApiClient.connect();
 
@@ -106,18 +124,22 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
     @Override
     public void onMapReady(GoogleMap googleMap) throws SecurityException {
         mMap = googleMap;
-        mMap.moveCamera( CameraUpdateFactory.newLatLngZoom(new LatLng(45,-95) , 16.2f) );
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(45, -95), 16.2f));
         googleMap.getUiSettings().setScrollGesturesEnabled(false);
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener()
-        {
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                if(marker.isInfoWindowShown()) {
-                    marker.hideInfoWindow();
-                } else {
-                    marker.showInfoWindow();
+                if (zombieMarkers != null) {
+                    long zomId = -1;
+                    try {
+                        zomId = Long.parseLong(marker.getTitle().split("/s")[1]);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    targetZombieId = zomId;
+                    marker.setAlpha()
                 }
-                if(marker.getPosition() != user.getLocation()){
+                if (marker.getPosition() != user.getLocation()) {
                     targetLocation = marker.getPosition();
                 }
                 return true;
@@ -125,8 +147,9 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
         });
 
     }
-
-
+    public void selectMarker(Marker marker){
+        marker.setAlpha(.5)
+    }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) throws SecurityException {
@@ -156,12 +179,38 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
         mGoogleApiClient.connect();
         super.onStart();
 
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "MainMap Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app URL is correct.
+                Uri.parse("android-app://com.fourninenine.zombiegameclient/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(mGoogleApiClient, viewAction);
     }
 
     @Override
     protected void onStop() {
         mGoogleApiClient.disconnect();
         super.onStop();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "MainMap Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app URL is correct.
+                Uri.parse("android-app://com.fourninenine.zombiegameclient/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(mGoogleApiClient, viewAction);
     }
 
     private void placeMarker(String label, MarkerOptions options) {
@@ -174,23 +223,22 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
 
     private void updateMap() {
         //for now we are going to have this hard coded for ease of testing
-        UserActionDto actionDt;
+        UserActionDto actionDto;
         RESTUserInterface userService = new HttpUserService();
         UserActionDto userAction = new UserActionDto(user.getId(), user.getLatitude(), user.getLongitude(), UserActionDto.Action.NOTHING);
-        Call<ArrayList<Zombie>> updateCall = userService.update(userAction);
-        updateCall.enqueue(new Callback<ArrayList<Zombie>>() {
+        Call<ClientUpdateDto> updateCall = userService.update(userAction);
+        updateCall.enqueue(new Callback<ClientUpdateDto>() {
             MapDrawingService drawService = new MapDrawingService(user, mMap);
 
             @Override
-            public void onResponse(Call<ArrayList<Zombie>> call, Response<ArrayList<Zombie>> response) {
+            public void onResponse(Call<ClientUpdateDto> call, Response<ClientUpdateDto> response) {
                 System.out.println("On success callback");
-
-                zombies = response.body();
+                zombies = response.body().getZombies();
                 populateMap();
             }
 
             @Override
-            public void onFailure(Call<ArrayList<Zombie>> call, Throwable t) {
+            public void onFailure(Call<ClientUpdateDto> call, Throwable t) {
                 System.out.println("ERROR");
                 //throw new IllegalStateException("An error was encountered with the API call");
 
@@ -207,32 +255,35 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
         Button killBtn = (Button) findViewById(R.id.killButton);
         killBtn.setEnabled(false);
         HttpUserService userService = new HttpUserService();
-        Zombie closest = null;
         if (zombies != null && zombies.size() == 0) {
-            showDialog("Quiet...","There are no zombies around right now, sorry.");
+            showDialog("Quiet...", "There are no zombies around right now, sorry.");
             killBtn.setEnabled(true);
             return;
         }
 
-        double minDistance = Double.MAX_VALUE;
         int zombieIndex = -1;
-        for (int i = 0; i < zombies.size(); i++) {
-            double thisDistance = Geomath.getDistance(zombies.get(i).getLocation().latitude, zombies.get(i).getLocation().longitude,
-                    user.getLocation().latitude, user.getLocation().longitude, "M");
-            if (thisDistance < minDistance) {
-                minDistance = thisDistance;
-                closest = zombies.get(i);
-                zombieIndex = i;
+        Iterator<HashMap.Entry<Long, Zombie>> zombIt = zombies.entrySet().iterator();
+        Zombie closest = null;
+        double minDistance = Double.MAX_VALUE;
+        double tempDistance = 666;
+        long minKey = 666 * 666;
+        while (zombIt.hasNext()) {
+            Map.Entry next = zombIt.next();
+            Zombie nextZom = (Zombie) next.getValue();
+            if ((tempDistance = Geomath.getDistance(nextZom.getLocation(), user.getLocation(), "M")) < minDistance) {
+                minDistance = tempDistance;
+                closest = nextZom;
             }
-            System.out.println("This distance: " + thisDistance);
-            System.out.println("Min distance: " + minDistance);
+
         }
         //after we've found the closest zombie
+
+
         if (closest != null) {
             UserActionDto dto = new UserActionDto(user.getId(), user.getLatitude(), user.getLongitude(), UserActionDto.Action.ATTACK);
             dto.setTarget(closest.getId());
             Call<Zombie> zombieCall = userService.attack(dto);
-            if(!alreadyAttacking)
+            if (!alreadyAttacking)
                 resolveAttack(zombieCall, zombieIndex);
             //zombies.remove(closest);
         }
@@ -247,7 +298,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
 
     private void showDialog(String title, String message) {
         AlertDialog alertDialog = new AlertDialog.Builder(MainMapActivity.this).create();
-        alertDialog.setTitle("Alert");
+        alertDialog.setTitle(title);
         alertDialog.setMessage(message);
         alertDialog.setIcon(R.drawable.zombiehand48);
         alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
@@ -264,7 +315,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
     }
 
     protected void startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -277,12 +328,14 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
         PendingResult<Status> pendingResult = LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequest, this);
     }
+
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(8000);
         mLocationRequest.setFastestInterval(250);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
+
     @Override
     public void onLocationChanged(Location location) {
         System.out.println("Location has Changed.");
@@ -293,18 +346,18 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
     }
 
 
-    public GoogleMap populateMap(){
+    public GoogleMap populateMap() {
 
         mMap.clear();
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
         builder.include(user.getLocation());
-        if(zombies == null)
+        if (zombies == null)
             updateMap();
-        else{
-            Iterator<Zombie> zombIt = zombies.iterator();
-            while(zombIt.hasNext()){
-                Zombie zom = zombIt.next();
+        else {
+            Iterator<HashMap.Entry<Long, Zombie>> zombIt = zombies.entrySet().iterator();
+            while (zombIt.hasNext()) {
+                Zombie zom = (Zombie) zombIt.next();
                 MarkerOptions marker = new MarkerOptions()
                         .position(zom.getLocation())
                         .title("Zombie " + zom.getId());
@@ -320,7 +373,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
                 .title(user.getName())
                 .anchor(0.5f, 0.5f)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.crosshairs));
-        if(targetLocation != null){
+        if (targetLocation != null) {
 
         }
         mMap.addMarker(userMarker);
@@ -338,6 +391,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
 
         return mMap;
     }
+
     /*public static void showDialog(String title, String message, Activity activity) {
         AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
         alertDialog.setTitle(title);
@@ -351,7 +405,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
                 });
         alertDialog.show();
     }*/
-    public Zombie resolveAttack(Call<Zombie> call, int zomIndex){
+    public Zombie resolveAttack(Call<Zombie> call, int zomIndex) {
         final int zombieIndex = zomIndex;
         call.enqueue(new Callback<Zombie>() {
 
@@ -360,14 +414,14 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
                 System.out.println("On success callback");
                 Zombie zombie;
                 zombie = response.body();
-                if(zombie == null){
+                if (zombie == null) {
                     return;
                 }
                 //remove the zombie from the list
-                if(!zombie.isAlive() && zombies.remove(zombieIndex) != null){
-                    showDialog("Killer","You have destroyzed Zombie " + zombie.getId());
+                if (!zombie.isAlive() && zombies.remove(zombieIndex) != null) {
+                    showDialog("Killer", "You have destroyzed Zombie " + zombie.getId());
                 }//else update the local zombie with the server's return object
-                else if(zombie.isAlive()){
+                else if (zombie.isAlive()) {
                     zombies.remove(zombieIndex);
                     zombies.add(zombieIndex, zombie);
                 }
@@ -375,6 +429,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
                 Button killButton = (Button) findViewById(R.id.killButton);
                 killButton.setEnabled(true);
             }
+
             @Override
             public void onFailure(Call<Zombie> call, Throwable t) {
                 System.out.println("ERROR");
@@ -384,5 +439,35 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
         });
         return null;
 
+    }
+
+    public void attackZombie(View view) {
+        if (targetZombieId > 0) {
+            killTargetZombie(targetZombieId);
+        }
+    }
+
+    private void killTargetZombie(long targetZombieId) {
+        HttpUserService service = new HttpUserService();
+        UserActionDto dto = new UserActionDto(user.getId(), user.getLatitude(), user.getLongitude(),
+                UserActionDto.Action.ATTACK);
+        dto.setTarget(targetZombieId);
+
+        Call<ClientUpdateDto> call = service.update(dto);
+        call.enqueue(new Callback<ClientUpdateDto>() {
+            @Override
+            public void onResponse(Call<ClientUpdateDto> call, Response<ClientUpdateDto> response) {
+                ClientUpdateDto dto = response.body();
+                zombies = dto.getZombies();
+                user = dto.getUser();
+                User.save(user);
+                populateMap();
+            }
+
+            @Override
+            public void onFailure(Call<ClientUpdateDto> call, Throwable t) {
+                System.out.println("WHAT HAPPENEND????");
+            }
+        });
     }
 }

@@ -48,5 +48,10 @@
         completions."
     </string>
 
+    <!-- Message strings that vary based on user state -->
+    <string name="u_exists_login_btn_txt">Sign In</string>
+    <string name="u_not_exist_login_btn_txt">Register</string>
+    <string name="username_hint">Enter your username</string>
+
 
 </resources>

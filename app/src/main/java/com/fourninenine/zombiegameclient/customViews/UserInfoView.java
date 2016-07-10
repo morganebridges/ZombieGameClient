@@ -59,7 +59,9 @@ public class UserInfoView extends View {
         if (a.hasValue(R.styleable.UserInfoView_exampleDrawable)) {
             mExampleDrawable = a.getDrawable(
                     R.styleable.UserInfoView_exampleDrawable);
-            mExampleDrawable.setCallback(this);
+            if (mExampleDrawable != null) {
+                mExampleDrawable.setCallback(this);
+            }
         }
 
         a.recycle();
@@ -68,8 +70,8 @@ public class UserInfoView extends View {
         mTextPaint = new TextPaint();
         mTextPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
         mTextPaint.setTextAlign(Paint.Align.LEFT);
-
         // Update TextPaint and text measurements from attributes
+        setExampleString("Here is a string we need");
         invalidateTextPaintAndMeasurements();
     }
 

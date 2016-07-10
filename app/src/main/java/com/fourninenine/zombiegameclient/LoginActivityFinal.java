@@ -21,11 +21,9 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -85,13 +83,27 @@ public class LoginActivityFinal extends AppCompatActivity implements LoaderCallb
         ApplicationContextProvider.setContext(context);
 
         preferences = context.getSharedPreferences(context.getString(R.string.user_shared_preferences), MODE_PRIVATE);
-
         setContentView(R.layout.activity_login_activity_final);
+        Button mNameSignInButton = (Button) findViewById(R.id.sign_in_button);
+        attachSignInButtonHandler(mNameSignInButton);
         // Set up the login form.
         mNameView = (AutoCompleteTextView) findViewById(R.id.user_name);
         populateAutoComplete();
+
+        //Set up UI variations for an existing vs a new user.
         if(User.isSavedUser()){
             mNameView.setText(preferences.getString(context.getString(R.string.user_name), "Noooo"));
+            mNameView.setEnabled(false);
+            if (mNameSignInButton != null) {
+                mNameSignInButton.setText(context.getString(R.string.u_exists_login_btn_txt));
+            }
+
+        }else{
+            mNameView.setHint(context.getString(R.string.username_hint));
+            if (mNameSignInButton != null) {
+                mNameSignInButton.setText(context.getString(R.string.u_not_exist_login_btn_txt));
+            }
+
 
         }
 
@@ -110,7 +122,13 @@ public class LoginActivityFinal extends AppCompatActivity implements LoaderCallb
             }
         });
 
-        Button mNameSignInButton = (Button) findViewById(R.id.sign_in_button);
+
+        mLoginFormView = findViewById(R.id.login_form);
+        mProgressView = findViewById(R.id.login_progress);
+    }
+
+    private void attachSignInButtonHandler(Button mNameSignInButton) {
+
         mNameSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -122,14 +140,12 @@ public class LoginActivityFinal extends AppCompatActivity implements LoaderCallb
 
             }
         });
-
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
     }
+
     private void loginLogic(){
 
         if(User.isSavedUser()){
-            login();
+            login(preferences.getLong(context.getString(R.string.user_id), -1));
         }else{
             String name = (mNameView.getText().toString());
             if(!(name.length() > 1)){
@@ -139,17 +155,17 @@ public class LoginActivityFinal extends AppCompatActivity implements LoaderCallb
             createUser(name);
         }
     }
-    private void login() {
+    private void login(long uid) {
 
-        User user;
-        user = new User();
+
 
         HttpUserService userService = new HttpUserService();
-        Call<User> call = userService.login(user.getId());
+        Call<User> call = userService.login(uid);
 
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
+
                 User.save(response.body());
                 registerGCM(response);
 
@@ -158,6 +174,7 @@ public class LoginActivityFinal extends AppCompatActivity implements LoaderCallb
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
+                System.out.println("Look inside my objects");
             }
         });
     }
@@ -195,6 +212,8 @@ public class LoginActivityFinal extends AppCompatActivity implements LoaderCallb
                 // Start IntentService to register this application with GCM.
                 Intent intent = new Intent(this, RegistrationIntentService.class);
                 startService(intent);
+                Intent mapIntent = new Intent(this, MainMapActivity.class);
+                startActivity(mapIntent);
             }
         }else{
 

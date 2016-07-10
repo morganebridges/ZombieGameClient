@@ -100,5 +100,9 @@ public class Globals {
                 });
         alertDialog.show();
     }
+    public static SharedPreferences getPreferences(){
+        Context context = ApplicationContextProvider.getAppContext();
+        return context.getSharedPreferences(context.getString(R.string.user_shared_preferences), Context.MODE_PRIVATE);
+    }
 }
 
