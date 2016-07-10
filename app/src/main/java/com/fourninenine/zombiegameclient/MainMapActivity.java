@@ -45,6 +45,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -79,7 +80,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
     //Related to targetting zombies.
     LongSparseArray<Marker> zombieMarkers;
     long targetZombieId;
-
+    public static boolean enemySelected = false;
     LatLng targetLocation;
 
 
@@ -137,7 +138,9 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
                         e.printStackTrace();
                     }
                     targetZombieId = zomId;
-                    marker.setAlpha()
+                    enemySelected = true;
+                    marker.setAlpha(0.3f);
+                    marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.Thriller_48));
                 }
                 if (marker.getPosition() != user.getLocation()) {
                     targetLocation = marker.getPosition();
@@ -148,7 +151,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
 
     }
     public void selectMarker(Marker marker){
-        marker.setAlpha(.5)
+        marker.setAlpha(.5f);
     }
 
     @Override
@@ -251,7 +254,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
 
     }
 
-    public void killNearest(View view) {
+    public void killNearest() {
         Button killBtn = (Button) findViewById(R.id.killButton);
         killBtn.setEnabled(false);
         HttpUserService userService = new HttpUserService();
@@ -282,7 +285,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
         if (closest != null) {
             UserActionDto dto = new UserActionDto(user.getId(), user.getLatitude(), user.getLongitude(), UserActionDto.Action.ATTACK);
             dto.setTarget(closest.getId());
-            Call<Zombie> zombieCall = userService.attack(dto);
+            Call<ClientUpdateDto> zombieCall = userService.update(dto);
             if (!alreadyAttacking)
                 resolveAttack(zombieCall, zombieIndex);
             //zombies.remove(closest);
@@ -392,38 +395,26 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
         return mMap;
     }
 
-    /*public static void showDialog(String title, String message, Activity activity) {
-        AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
-        alertDialog.setTitle(title);
-        alertDialog.setMessage(message);
-        alertDialog.setIcon(R.drawable.zombiehand48);
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-        alertDialog.show();
-    }*/
-    public Zombie resolveAttack(Call<Zombie> call, int zomIndex) {
+    public Zombie resolveAttack(Call<ClientUpdateDto> call, int zomIndex) {
         final int zombieIndex = zomIndex;
-        call.enqueue(new Callback<Zombie>() {
+        call.enqueue(new Callback<ClientUpdateDto>() {
 
             @Override
-            public void onResponse(Call<Zombie> call, Response<Zombie> response) {
+            public void onResponse(Call<ClientUpdateDto> call, Response<ClientUpdateDto> response) {
                 System.out.println("On success callback");
-                Zombie zombie;
-                zombie = response.body();
+                ClientUpdateDto dto  = response.body();
+                zombies = dto.getZombies();
+                Zombie zombie = zombies.get(dto.getTargetId());
                 if (zombie == null) {
                     return;
                 }
                 //remove the zombie from the list
-                if (!zombie.isAlive() && zombies.remove(zombieIndex) != null) {
+                if (!zombie.isAlive()) {
                     showDialog("Killer", "You have destroyzed Zombie " + zombie.getId());
+                    zombies.remove(zombie.getId());
                 }//else update the local zombie with the server's return object
                 else if (zombie.isAlive()) {
-                    zombies.remove(zombieIndex);
-                    zombies.add(zombieIndex, zombie);
+
                 }
                 populateMap();
                 Button killButton = (Button) findViewById(R.id.killButton);
@@ -431,7 +422,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
             }
 
             @Override
-            public void onFailure(Call<Zombie> call, Throwable t) {
+            public void onFailure(Call<ClientUpdateDto> call, Throwable t) {
                 System.out.println("ERROR");
                 Button killButton = (Button) findViewById(R.id.killButton);
                 killButton.setEnabled(true);
@@ -442,9 +433,9 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
     }
 
     public void attackZombie(View view) {
-        if (targetZombieId > 0) {
+        if (enemySelected) {
             killTargetZombie(targetZombieId);
-        }
+        }else killNearest();
     }
 
     private void killTargetZombie(long targetZombieId) {
