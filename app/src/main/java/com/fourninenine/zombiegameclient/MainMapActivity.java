@@ -1,8 +1,6 @@
 package com.fourninenine.zombiegameclient;
 
-import android.*;
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -29,7 +27,6 @@ import com.fourninenine.zombiegameclient.models.dto.ClientUpdateDto;
 import com.fourninenine.zombiegameclient.models.dto.UserActionDto;
 import com.fourninenine.zombiegameclient.models.utilities.ApplicationContextProvider;
 import com.fourninenine.zombiegameclient.models.utilities.Geomath;
-import com.fourninenine.zombiegameclient.models.utilities.Globals;
 import com.fourninenine.zombiegameclient.services.MapDrawingService;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -40,23 +37,20 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -140,7 +134,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
                     targetZombieId = zomId;
                     enemySelected = true;
                     marker.setAlpha(0.3f);
-                    marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.Thriller_48));
+                    marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icopacityblack24));
                 }
                 if (marker.getPosition() != user.getLocation()) {
                     targetLocation = marker.getPosition();
@@ -162,7 +156,9 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
             //wait(500);
             System.out.println("No Location Found");
         }
+
         user.setLocation(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
+        user.addLocation(mLastLocation);
         updateMap();
         startLocationUpdates();
     }
@@ -184,17 +180,17 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "MainMap Page", // TODO: Define a title for the content shown.
+        //Action viewAction = null /*Action.newAction(
+        //        Action.TYPE_VIEW, // TODO: choose an action type.
+        /*        "MainMap Page", // TODO: Define a title for the content shown.
                 // TODO: If you have web page content that matches this app activity's content,
                 // make sure this auto-generated web page URL is correct.
                 // Otherwise, set the URL to null.
                 Uri.parse("http://host/path"),
                 // TODO: Make sure this auto-generated app URL is correct.
-                Uri.parse("android-app://com.fourninenine.zombiegameclient/http/host/path")
+                Uri.parse("android-app://com.fourninenine.zombiegameclient.application")
         );
-        AppIndex.AppIndexApi.start(mGoogleApiClient, viewAction);
+        AppIndex.AppIndexApi.start(mGoogleApiClient, viewAction);*/
     }
 
     @Override
@@ -203,17 +199,17 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
         super.onStop();
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "MainMap Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app URL is correct.
-                Uri.parse("android-app://com.fourninenine.zombiegameclient/http/host/path")
-        );
-        AppIndex.AppIndexApi.end(mGoogleApiClient, viewAction);
+//        Action viewAction = Action.newAction(
+//                Action.TYPE_VIEW, // TODO: choose an action type.
+//                "MainMap Page", // TODO: Define a title for the content shown.
+//                // TODO: If you have web page content that matches this app activity's content,
+//                // make sure this auto-generated web page URL is correct.
+//                // Otherwise, set the URL to null.
+//                Uri.parse("http://host/path"),
+//                // TODO: Make sure this auto-generated app URL is correct.
+//                Uri.parse("android-app://com.fourninenine.zombiegameclient.application")
+//        );
+//        AppIndex.AppIndexApi.end(mGoogleApiClient, viewAction);
     }
 
     private void placeMarker(String label, MarkerOptions options) {
@@ -298,7 +294,6 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
         totalKillsView.setText(updateString);
         populateMap();
     }
-
     private void showDialog(String title, String message) {
         AlertDialog alertDialog = new AlertDialog.Builder(MainMapActivity.this).create();
         alertDialog.setTitle(title);
@@ -345,6 +340,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
         Log.d("On location change", "ON LOCATION CHANGE");
         user.setLocation(new LatLng(location.getLatitude(), location.getLongitude()));
         mLastLocation = location;
+        user.addLocation(mLastLocation);
         populateMap();
     }
 
@@ -375,7 +371,8 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
                 .position(user.getLocation())
                 .title(user.getName())
                 .anchor(0.5f, 0.5f)
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.crosshairs));
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.northdirection48));
+
         if (targetLocation != null) {
 
         }
@@ -384,13 +381,18 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
         builder.include(user.getLocation());
         LatLngBounds bounds = builder.build();
 
-        int padding = 20; // offset from edges of the map in pixels
+        /*int padding = 20; // offset from edges of the map in pixels
         CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
 
         float zoomLevel = mMap.getCameraPosition().zoom;
-        CameraUpdate userUpdate = CameraUpdateFactory.newLatLngZoom(user.getLocation(), zoomLevel);
+        CameraUpdate userUpdate = CameraUpdateFactory.newLatLngZoom(user.getLocation(), zoomLevel);*/
 
-        mMap.moveCamera(userUpdate);
+        CameraPosition cameraPosition =   new CameraPosition.Builder()
+                .target(user.getLocation())
+                .zoom(mMap.getCameraPosition().zoom)
+                .bearing(mLastLocation.getBearing())
+                .build();
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
         return mMap;
     }
@@ -460,5 +462,9 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
                 System.out.println("WHAT HAPPENEND????");
             }
         });
+    }
+
+    public void showUserStats(View view) {
+
     }
 }

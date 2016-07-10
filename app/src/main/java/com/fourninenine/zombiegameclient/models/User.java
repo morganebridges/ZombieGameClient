@@ -2,15 +2,24 @@ package com.fourninenine.zombiegameclient.models;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Location;
+import android.util.Log;
 
 import com.fourninenine.zombiegameclient.R;
 import com.fourninenine.zombiegameclient.models.utilities.ApplicationContextProvider;
 import com.google.android.gms.maps.model.LatLng;
 
+
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.Queue;
+
 /**
  * A user model class with methods to retrieve and save itself to shared preferences
  */
 public class User{
+
+
     Context context = ApplicationContextProvider.getAppContext();
     private long id = R.string.INVALID_VALUE;
     private String name;
@@ -20,6 +29,7 @@ public class User{
     private int ammo;
     private String gcmId;
     private int totalKills;
+    private Deque<Location> previousLocations;
 
     public User(String name, long id, double latitude, double longitude, int serum, int ammo, String gcmId, int totalKills){
         //only set an id if it is valid
@@ -32,7 +42,7 @@ public class User{
         this.ammo = ammo;
         this.gcmId = gcmId;
         this.totalKills = totalKills;
-
+        this.previousLocations = new LinkedList<Location>();
     }
 
     public User(){}
@@ -69,8 +79,9 @@ public class User{
     }
 
     public static void save(User user) throws IllegalStateException{
-        if(user == null)
-            throw new IllegalStateException("User argument null at save method");
+        if(user == null){
+            return;
+        }
         Context context = ApplicationContextProvider.getAppContext();
         SharedPreferences preferences = context.getSharedPreferences(
                 context.getString(R.string.user_shared_preferences), Context.MODE_PRIVATE);
@@ -169,5 +180,25 @@ public class User{
         SharedPreferences preferences = context.getSharedPreferences(context.getString(R.string.user_shared_preferences), Context.MODE_PRIVATE);
         //Globals.showDialog("New User","Choose a user name", LoginActivity.this);
         return preferences.getLong(context.getString(R.string.user_id), -1) > 0;
+    }
+    public Location popLastLocation(){
+        if(previousLocations.size() > 0){
+            return previousLocations.removeFirst();
+        }
+        return null;
+    }
+
+    /**
+     * We only want to hold on to the five most recent locations that we've checked in from.
+     * @param newLocation
+     */
+    public void addLocation(Location newLocation){
+        if(previousLocations.size() > 5){
+            previousLocations.removeFirst();
+            previousLocations.addLast(newLocation);
+        }
+    }
+    public boolean hasLocations(){
+        return previousLocations.size() > 0;
     }
 }

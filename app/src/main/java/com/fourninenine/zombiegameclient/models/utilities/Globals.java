@@ -26,6 +26,8 @@ public class Globals {
     private static TokenItem userToken;
     private static Globals instance;
     private static ArrayList<TokenItem> tokenList = new ArrayList<>();
+    //This is a reference flag I'll use to see
+    private static boolean inApp = false;
 
     private GCMHelper gcmHelper = new GCMHelper(MyApp.getAppContext());
 

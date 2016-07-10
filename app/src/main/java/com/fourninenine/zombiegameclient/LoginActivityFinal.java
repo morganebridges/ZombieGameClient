@@ -21,6 +21,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -165,6 +166,15 @@ public class LoginActivityFinal extends AppCompatActivity implements LoaderCallb
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
+                if(response.body() == null){
+                    System.out.println("lets take it from the top");
+                    //This error is typically when bad residual data is left in our user prefs.
+                    Globals.getPreferences().edit().clear().apply();
+                    Globals.showDialog("Player Not Found", "There were problems logging in, we will need to " +
+                            "create a new character for you.", LoginActivityFinal.this);
+                    Intent loginIntent = new Intent(context, LoginActivity.class);
+                    startActivity(loginIntent);
+                }
 
                 User.save(response.body());
                 registerGCM(response);

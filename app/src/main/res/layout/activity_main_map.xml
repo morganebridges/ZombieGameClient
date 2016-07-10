@@ -15,15 +15,34 @@
         tools:context="com.fourninenine.zombiegameclient.MainMapActivity" />
 
     <Button
-        android:id="@+id/killButton"
-        android:layout_width="wrap_content"
+        android:id="@+id/userPortrait"
+        android:layout_width="50dp"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal|center_vertical"
+        android:onClick="showUserStats"
+        android:background="@drawable/filmnoir48"
+        android:layout_below="@+id/mapTotalKillsView"
+        android:layout_alignEnd="@+id/killButton"
+        android:layout_marginEnd="24dp"
+        android:nestedScrollingEnabled="false"
+         />
+    <Button
+        android:id="@+id/killButton"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
         android:onClick="attackZombie"
-        android:text="@string/attackButton"
+        android:background="@drawable/infantryknife52"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:allowUndo="false" />
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="53dp"
+        android:layout_marginBottom="26dp" />
+    <Button
+        android:id="@+id/shootButton"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:onClick="attackZombie"
+        android:background="@drawable/firinggun50"
+        android:layout_alignTop="@+id/killButton"
+        android:layout_alignStart="@+id/mapTotalKillsView" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -31,17 +50,17 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="@string/map_total_kills_initial"
         android:id="@+id/mapTotalKillsView"
+        android:width="190dp"
         android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:width="190px"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignParentEnd="true" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="New Text"
         android:id="@+id/mapNameField"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_below="@+id/mapTotalKillsView"
+        android:layout_alignStart="@+id/userPortrait"
+        android:layout_marginTop="49dp" />
 
 </RelativeLayout>

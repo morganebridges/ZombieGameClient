@@ -41,7 +41,7 @@
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
 
-                <category android:name="com.fourninenine.zombiegameclient" />
+                <category android:name="com.fourninenine.zombiegameclient.application" />
             </intent-filter>
         </receiver>
 
