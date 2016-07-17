@@ -13,23 +13,21 @@ package com.fourninenine.zombiegameclient.services; /**
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import com.fourninenine.zombiegameclient.LoginActivity;
 import com.fourninenine.zombiegameclient.R;
 import com.fourninenine.zombiegameclient.models.User;
 import com.fourninenine.zombiegameclient.models.utilities.ApplicationContextProvider;
-import com.fourninenine.zombiegameclient.models.utilities.Globals;
 
 
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 //import com.fourninenine.zombiegameclient.R.string;
 import com.fourninenine.zombiegameclient.httpServices.RESTServices.HttpUserService;
+import com.fourninenine.zombiegameclient.models.utilities.Globals;
 import com.google.android.gms.gcm.GcmPubSub;
 
 import java.io.IOException;
@@ -50,7 +48,7 @@ public class RegistrationIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
-        SharedPreferences sharedPreferences = ApplicationContextProvider.getAppContext().getSharedPreferences("prefs", MODE_PRIVATE);
+        SharedPreferences sharedPreferences = Globals.getPreferences();
 
         try {
             // [START register_for_gcm]
@@ -119,7 +117,7 @@ public class RegistrationIntentService extends IntentService {
     public void sendRegistrationToServer(String token) {
         String authorizedEntity =  R.string.PROJECT_ID + "";
         String scope = "GCM";
-        Context context = LoginActivity.getAppContext();
+        Context context = ApplicationContextProvider.getAppContext();
         SharedPreferences preferences = context.getSharedPreferences(context.getString(R.string.user_shared_preferences), MODE_PRIVATE);
         long clientKey = preferences.getLong("id", -1);
         System.out.println("current client key");
@@ -138,7 +136,6 @@ public class RegistrationIntentService extends IntentService {
             @Override
             public void onFailure(Call<User> call, Throwable t) {
                 System.out.println("ERROR");
-                throw new IllegalStateException("An error was encountered with the API call");
             }
         });
     }

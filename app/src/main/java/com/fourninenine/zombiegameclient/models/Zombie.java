@@ -16,7 +16,7 @@ public class Zombie {
     public Zombie(long id, double latitude, double longitude, int hp, boolean alive) {
         this.latitude = latitude;
         this.longitude = longitude;
-        this.hp = hp;
+        this.hp = 5;
         this.id = id;
         this.alive = alive;
     }

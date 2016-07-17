@@ -3,6 +3,7 @@ package com.fourninenine.zombiegameclient.models.dto;
 import com.fourninenine.zombiegameclient.models.User;
 import com.fourninenine.zombiegameclient.models.Zombie;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -14,12 +15,12 @@ public class ClientUpdateDto {
     long id;
 
     long targetId;
-    HashMap<Long, Zombie> zombies;
+    ArrayList<Zombie> zombies;
     User user;
     UserActionDto.Action userAction;
 
     public ClientUpdateDto(){}
-    public ClientUpdateDto(long targetId, HashMap<Long, Zombie> zombies, User user, UserActionDto.Action userAction){
+    public ClientUpdateDto(long targetId, ArrayList<Zombie> zombies, User user, UserActionDto.Action userAction){
         this.targetId = targetId;
         this. zombies = zombies;
         this.user = user;
@@ -58,11 +59,11 @@ public class ClientUpdateDto {
         this.user = user;
     }
 
-    public HashMap<Long, Zombie> getZombies() {
+    public ArrayList<Zombie> getZombies() {
         return zombies;
     }
 
-    public void setZombies(HashMap<Long, Zombie> zombies) {
+    public void setZombies(ArrayList<Zombie> zombies) {
         this.zombies = zombies;
     }
 

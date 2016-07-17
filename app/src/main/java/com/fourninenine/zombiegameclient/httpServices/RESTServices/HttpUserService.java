@@ -1,12 +1,15 @@
 package com.fourninenine.zombiegameclient.httpServices.RESTServices;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.fourninenine.zombiegameclient.R;
 import com.fourninenine.zombiegameclient.httpServices.RESTInterfaces.RESTUserInterface;
 import com.fourninenine.zombiegameclient.models.User;
 import com.fourninenine.zombiegameclient.models.Zombie;
 import com.fourninenine.zombiegameclient.models.dto.ClientUpdateDto;
 import com.fourninenine.zombiegameclient.models.dto.UserActionDto;
+import com.fourninenine.zombiegameclient.models.utilities.ApplicationContextProvider;
 import com.fourninenine.zombiegameclient.models.utilities.Globals;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -33,8 +36,11 @@ public class HttpUserService implements RESTUserInterface {
     private static HttpUserService instance;
 
     public static final String BASE_URL = "http://52.39.83.97:8080";
+    //public static final String BASE_URL = "http://127.0.0.1:8080";
+
     private Retrofit retrofit;
     private RESTUserInterface apiService;
+    private Context context = ApplicationContextProvider.getAppContext();
 
     public HttpUserService() {
         retrofit = new Retrofit.Builder()
@@ -106,6 +112,11 @@ public class HttpUserService implements RESTUserInterface {
 
     @Override
     public Call<ClientUpdateDto> update(@Body UserActionDto userActionDto) {
+        SharedPreferences prefs = Globals.getPreferences();
+        if(prefs.contains(context.getString(R.string.user_last_updated))){
+            int lastUpdated = prefs.getInt("lastUpdated", -1);
+
+        }
         return apiService.update(userActionDto);
     }
 

@@ -1,6 +1,6 @@
 package com.fourninenine.zombiegameclient.services;
 
-import com.fourninenine.zombiegameclient.LoginActivity;
+import com.fourninenine.zombiegameclient.models.utilities.ApplicationContextProvider;
 import com.fourninenine.zombiegameclient.models.utilities.Globals;
 import com.fourninenine.zombiegameclient.models.utilities.TokenItem;
 import com.fourninenine.zombiegameclient.models.utilities.TokenList;
@@ -19,7 +19,7 @@ public class MyInstanceIDService extends InstanceIDListenerService {
         // some generalized store for your tokens
         TokenList tokenList = TokenList.Instance();
         System.out.println("see application context");
-        InstanceID iid = InstanceID.getInstance(LoginActivity.getAppContext());
+        InstanceID iid = InstanceID.getInstance(ApplicationContextProvider.getAppContext());
         for(TokenItem tokenItem : tokenList.getMap()){
 
             try {
@@ -35,7 +35,7 @@ public class MyInstanceIDService extends InstanceIDListenerService {
     public String retrieveTokenItem() throws IOException {
         String token = "ass";
         if(Globals.getUserToken() == null){
-            InstanceID iid = InstanceID.getInstance(LoginActivity.getAppContext());
+            InstanceID iid = InstanceID.getInstance(ApplicationContextProvider.getAppContext());
 
             try {
                 token = iid.getToken("1066512751755", "GCM");
@@ -48,22 +48,5 @@ public class MyInstanceIDService extends InstanceIDListenerService {
         }
         return Globals.getUserToken().getRegId();
     }
-
-    /*public String generateToken(){
-
-        String authorizedEntity =  R.string.PROJECT_ID + "";
-        String scope = "GCM";
-        String token1 = null;
-        GCMHelper helper = new GCMHelper(getApplicationContext());
-        try {
-            token1 = helper.
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if(token1 == null){
-            throw new IllegalStateException("Not the result we wanted.");
-        }
-        return token1;
-    }*/
 
 }

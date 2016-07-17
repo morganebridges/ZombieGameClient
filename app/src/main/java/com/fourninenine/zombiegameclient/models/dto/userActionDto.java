@@ -51,7 +51,7 @@ public class UserActionDto {
         //this.additionalParam = additionalParam;
     }
 
-    public static  enum Action {
+    public enum Action {
         NOTHING (0),
         ATTACK (1),
         SALVAGE (2);

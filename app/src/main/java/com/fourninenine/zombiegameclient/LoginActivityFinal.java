@@ -21,7 +21,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -38,6 +37,7 @@ import com.fourninenine.zombiegameclient.httpServices.RESTServices.HttpUserServi
 import com.fourninenine.zombiegameclient.models.User;
 import com.fourninenine.zombiegameclient.models.utilities.ApplicationContextProvider;
 import com.fourninenine.zombiegameclient.models.utilities.Globals;
+import com.fourninenine.zombiegameclient.services.QuickstartPreferences;
 import com.fourninenine.zombiegameclient.services.RegistrationIntentService;
 
 import retrofit2.Call;
@@ -84,6 +84,7 @@ public class LoginActivityFinal extends AppCompatActivity implements LoaderCallb
         ApplicationContextProvider.setContext(context);
 
         preferences = context.getSharedPreferences(context.getString(R.string.user_shared_preferences), MODE_PRIVATE);
+
         setContentView(R.layout.activity_login_activity_final);
         Button mNameSignInButton = (Button) findViewById(R.id.sign_in_button);
         attachSignInButtonHandler(mNameSignInButton);
@@ -158,8 +159,6 @@ public class LoginActivityFinal extends AppCompatActivity implements LoaderCallb
     }
     private void login(long uid) {
 
-
-
         HttpUserService userService = new HttpUserService();
         Call<User> call = userService.login(uid);
 
@@ -172,19 +171,23 @@ public class LoginActivityFinal extends AppCompatActivity implements LoaderCallb
                     Globals.getPreferences().edit().clear().apply();
                     Globals.showDialog("Player Not Found", "There were problems logging in, we will need to " +
                             "create a new character for you.", LoginActivityFinal.this);
-                    Intent loginIntent = new Intent(context, LoginActivity.class);
+                    Intent loginIntent = new Intent(context, LoginActivityFinal.class);
                     startActivity(loginIntent);
                 }
 
                 User.save(response.body());
-                registerGCM(response);
-
+                /* +-+-+- If we have not yet registered for cloud messaging, do so -+-+-)*/
+                if(!preferences.getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false))
+                    registerGCM(response);
+                Intent mapIntent = new Intent(ApplicationContextProvider.getAppContext(), MainMapActivity.class);
+                startActivity(mapIntent);
 
             }
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-                System.out.println("Look inside my objects");
+                Globals.showConnectionDialog(LoginActivityFinal.this);
+
             }
         });
     }
@@ -197,6 +200,8 @@ public class LoginActivityFinal extends AppCompatActivity implements LoaderCallb
             public void onResponse(Call<User> call, Response<User> response) {
                 User.save(response.body());
                 registerGCM(response);
+                Intent mapIntent = new Intent(ApplicationContextProvider.getAppContext(), MainMapActivity.class);
+                startActivity(mapIntent);
             //TODO: get a location service call in here to try to get a jump  on that.
 
             }
@@ -204,7 +209,8 @@ public class LoginActivityFinal extends AppCompatActivity implements LoaderCallb
             @Override
             public void onFailure(Call<User> call, Throwable t) {
                 t.printStackTrace();
-                System.out.println(call.getClass());
+                Globals.showConnectionDialog(LoginActivityFinal.this);
+
 
             }
         });
@@ -222,9 +228,9 @@ public class LoginActivityFinal extends AppCompatActivity implements LoaderCallb
                 // Start IntentService to register this application with GCM.
                 Intent intent = new Intent(this, RegistrationIntentService.class);
                 startService(intent);
-                Intent mapIntent = new Intent(this, MainMapActivity.class);
-                startActivity(mapIntent);
+
             }
+
         }else{
 
             System.out.println("There was a problem with the response object");
@@ -442,5 +448,6 @@ public class LoginActivityFinal extends AppCompatActivity implements LoaderCallb
             showProgress(false);
         }
     }
+
 }
 

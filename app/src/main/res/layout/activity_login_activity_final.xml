@@ -40,11 +40,9 @@
                 android:id="@+id/user_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/prompt_email"
-                android:inputType="textEmailAddress"
+                android:hint="@string/agro_name_ask"
                 android:maxLines="1"
                 android:singleLine="true"
-                android:text="@string/user_name"
                 android:layout_weight="0.66" />
 
             <Button
@@ -60,11 +58,10 @@
         </LinearLayout>
 
     <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="307dp"
+        android:layout_height="354dp"
         android:id="@+id/imageView"
-        android:src="@mipmap/zombie_launcher_1"
-        android:layout_weight="0.70"
+        android:src="@drawable/zombie512"
         android:layout_gravity="center_horizontal"
         android:foregroundGravity="bottom"
         android:paddingTop="40dp" />

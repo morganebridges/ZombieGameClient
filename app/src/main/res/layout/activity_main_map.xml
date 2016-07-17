@@ -14,11 +14,16 @@
         android:layout_height="match_parent"
         tools:context="com.fourninenine.zombiegameclient.MainMapActivity" />
 
+    <TextSwitcher
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textSwitcher" />
+
     <Button
         android:id="@+id/userPortrait"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
-        android:onClick="showUserStats"
+        android:onClick="updateFromView"
         android:background="@drawable/filmnoir48"
         android:layout_below="@+id/mapTotalKillsView"
         android:layout_alignEnd="@+id/killButton"
@@ -30,7 +35,7 @@
         android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:onClick="attackZombie"
-        android:background="@drawable/infantryknife52"
+        android:background="@drawable/infantryknife"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
         android:layout_marginStart="53dp"
@@ -42,7 +47,9 @@
         android:onClick="attackZombie"
         android:background="@drawable/firinggun50"
         android:layout_alignTop="@+id/killButton"
-        android:layout_alignStart="@+id/mapTotalKillsView" />
+        android:layout_alignStart="@+id/mapTotalKillsView"
+        android:foregroundGravity="top"
+        android:layout_alignBottom="@+id/killButton" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -62,5 +69,18 @@
         android:layout_below="@+id/mapTotalKillsView"
         android:layout_alignStart="@+id/userPortrait"
         android:layout_marginTop="49dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Loading telemetry and sound pressure varience analysis."
+        android:id="@+id/textView2"
+        android:layout_above="@+id/killButton"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/textSwitcher"
+        android:layout_margin="20px"
+        android:background="@color/abc_search_url_text_pressed"
+        android:textSize="7pt"
+        android:textColor="@android:color/holo_green_light" />
 
 </RelativeLayout>

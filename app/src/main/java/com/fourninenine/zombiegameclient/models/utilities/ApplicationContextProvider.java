@@ -1,9 +1,8 @@
 package com.fourninenine.zombiegameclient.models.utilities;
 
-import android.app.Application;
 import android.content.Context;
 
-import com.fourninenine.zombiegameclient.LoginActivity;
+import com.fourninenine.zombiegameclient.LoginActivityFinal;
 
 public class ApplicationContextProvider {
     /**

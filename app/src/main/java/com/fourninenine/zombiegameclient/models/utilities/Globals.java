@@ -17,11 +17,13 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by morganebridges on 6/19/16.
  */
 public class Globals {
+    private static AlertDialog showingAlert = null;
     private static User currentUser;
     private static TokenItem userToken;
     private static Globals instance;
@@ -85,11 +87,13 @@ public class Globals {
         }
         return true;
     }
-    public static User getUser(){
+    public static User getUser() throws InterruptedException {
         User user = User.getUser();
         return user;
     }
     public static void showDialog(String title, String message, Activity activity) {
+        if(showingAlert != null)
+            showingAlert.dismiss();
         AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
         alertDialog.setTitle(title);
         alertDialog.setMessage(message);
@@ -105,6 +109,26 @@ public class Globals {
     public static SharedPreferences getPreferences(){
         Context context = ApplicationContextProvider.getAppContext();
         return context.getSharedPreferences(context.getString(R.string.user_shared_preferences), Context.MODE_PRIVATE);
+    }
+    public static void showConnectionDialog(Activity activity){
+        Random rnd = new Random();
+        String[] offlineQuips = {
+                "They must have chewed through the wiring, I'm not getting ANYTHING",
+                "This never happened when I had boost mobile.",
+                "This reception is worse than an biter wedding in Alabama",
+                "Keep sharp, we're flying blind out here.",
+                "Looks like its just you and me, kid",
+                "God damn phone company, well at least they spent their last days cutting corners and not rotting flesh",
+                "I'm sorry, but central synchronization is offline while main power is being redirected to directed energy weapons in the" +
+                        " an effort to repel a horde. Please try again shortly."
+        };
+        String message = offlineQuips[rnd.nextInt(offlineQuips.length)];
+        showDialog("Connection Issues", message, activity);
+
+
+    }
+    public static double metersToDegrees(double meters){
+        return meters / 71695.8;
     }
 }
 

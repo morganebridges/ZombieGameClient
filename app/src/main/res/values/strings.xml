@@ -22,20 +22,22 @@
     <string name="map_total_kills_initial">Total Kills:</string>
     <string name="map_total_kills_display">Total Kills: %d</string>
     <string name="INVALID_VALUE">-1</string>
-    <string name="title_activity_login_activity_final">Sign in</string>
+    <string name="title_activity_login_activity_final">Welcome to Zed Reckoning</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="action_sign_in">Sign in or register</string>
     <string name="error_incorrect_password">This password is incorrect</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
+    <string name="permission_rationale">"Zed Reckoning requires access to your location and storage
+        services in order to provide an optimal gaming experience."
     </string>
 
     <!-- Message strings that vary based on user state -->
     <string name="u_exists_login_btn_txt">Sign In</string>
     <string name="u_not_exist_login_btn_txt">Register</string>
     <string name="username_hint">Enter your username</string>
+    <string name="agro_name_ask">You got a name, punk?</string>
+    <string name="user_last_updated">0</string>
 
 
 </resources>

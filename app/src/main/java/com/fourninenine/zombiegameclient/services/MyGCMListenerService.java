@@ -26,12 +26,10 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import com.fourninenine.zombiegameclient.LoginActivity;
+import com.fourninenine.zombiegameclient.LoginActivityFinal;
 import com.fourninenine.zombiegameclient.R;
 import com.fourninenine.zombiegameclient.httpServices.RESTServices.HttpUserService;
 import com.fourninenine.zombiegameclient.models.User;
-import com.fourninenine.zombiegameclient.models.dto.UserActionDto;
-import com.fourninenine.zombiegameclient.models.utilities.Globals;
 import com.google.android.gms.gcm.GcmListenerService;
 
 public class    MyGCMListenerService extends GcmListenerService {
@@ -55,14 +53,8 @@ public class    MyGCMListenerService extends GcmListenerService {
 
         HttpUserService userService = new HttpUserService();
         User user = User.getUser();
-        /*userService.update(new UserActionDto(user.getId(), user.getLatitude(), user.getLongitude(), UserActionDto.Action.NOTHING));
-        if (from.startsWith("/topics/")) {
-            // message received from some topic.
-        } else {
-            // normal downstream message.
-        }*/
+
         sendNotification(message);
-        // [START_EXCLUDE]
         /**
          * Production applications would usually process the message here.
          * Eg: - Syncing with server.
@@ -85,7 +77,7 @@ public class    MyGCMListenerService extends GcmListenerService {
      * @param message GCM message received.
      */
     private void sendNotification(String message) {
-        Intent intent = new Intent(this, LoginActivity.class);
+        Intent intent = new Intent(this, LoginActivityFinal.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);

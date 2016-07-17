@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.fourninenine.zombiegameclient.R;
 import com.fourninenine.zombiegameclient.models.utilities.ApplicationContextProvider;
+import com.fourninenine.zombiegameclient.models.utilities.Globals;
 import com.google.android.gms.maps.model.LatLng;
 
 
@@ -31,21 +32,37 @@ public class User{
     private int totalKills;
     private Deque<Location> previousLocations;
 
-    public User(String name, long id, double latitude, double longitude, int serum, int ammo, String gcmId, int totalKills){
+    public double getPerceptionRange() {
+        return perceptionRange;
+    }
+
+    public void setPerceptionRange(double perceptionRange) {
+        this.perceptionRange = perceptionRange;
+    }
+
+    private double perceptionRange;
+    private double attackRange;
+
+    private static final Object lockObject = new Object();
+
+    public User(String name, long id, double latitude, double longitude, int serum, int ammo, String gcmId, int totalKills, double attackRange){
         //only set an id if it is valid
         if(id > 0)
             this.id = id;
         this.name = name;
+        this.attackRange = attackRange;
         this.latitude = latitude;
         this.longitude = longitude;
         this.serum = serum;
         this.ammo = ammo;
         this.gcmId = gcmId;
         this.totalKills = totalKills;
-        this.previousLocations = new LinkedList<Location>();
+        this.previousLocations = new LinkedList<>();
     }
 
-    public User(){}
+    public User(){
+        this.previousLocations = new LinkedList<>();
+    }
 
     public User(String username) {
         this.name = username;
@@ -55,8 +72,18 @@ public class User{
 
     public static User getUser() {
         Context context = ApplicationContextProvider.getAppContext();
-        SharedPreferences preferences = context.getSharedPreferences(
-                context.getString(R.string.user_shared_preferences), Context.MODE_PRIVATE);
+        SharedPreferences preferences = Globals.getPreferences();
+        synchronized (lockObject){
+            while(context == null) {
+                System.out.println("Application context null");
+                try{
+                    //lockObject.wait(50);
+                }catch(Exception e){
+                    return new User();
+                }
+            }
+        }
+
 
         long id = preferences.getLong(
                 context.getString(R.string.user_id), -1);
@@ -74,8 +101,9 @@ public class User{
                 context.getString(R.string.user_gcmid), "");
         int totalKills = preferences.getInt(
                 context.getString(R.string.user_total_kills), 0);
+        double attackRange = preferences.getFloat("attackRange", 10);
 
-        return  new User(name, id, latitude, longitude, serum, ammo, gcmId, totalKills);
+        return  new User(name, id, latitude, longitude, serum, ammo, gcmId, totalKills, attackRange);
     }
 
     public static void save(User user) throws IllegalStateException{
@@ -175,6 +203,7 @@ public class User{
         return totalKills;
     }
 
+
     public static boolean isSavedUser(){
         Context context = ApplicationContextProvider.getAppContext();
         SharedPreferences preferences = context.getSharedPreferences(context.getString(R.string.user_shared_preferences), Context.MODE_PRIVATE);
@@ -193,6 +222,8 @@ public class User{
      * @param newLocation
      */
     public void addLocation(Location newLocation){
+        if(previousLocations == null)
+            previousLocations = new LinkedList<Location>();
         if(previousLocations.size() > 5){
             previousLocations.removeFirst();
             previousLocations.addLast(newLocation);
@@ -200,5 +231,13 @@ public class User{
     }
     public boolean hasLocations(){
         return previousLocations.size() > 0;
+    }
+
+    public double getAttackRange() {
+        return attackRange;
+    }
+
+    public void setAttackRange(double attackRange) {
+        this.attackRange = attackRange;
     }
 }

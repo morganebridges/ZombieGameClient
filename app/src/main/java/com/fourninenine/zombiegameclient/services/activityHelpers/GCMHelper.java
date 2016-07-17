@@ -21,7 +21,7 @@ public final class GCMHelper {
 
     public GCMHelper (Context context)
     {
-        this.context= context;
+        GCMHelper.context = context;
     }
 
     public String GCMRegister (String SENDER_ID) throws Exception
@@ -45,9 +45,6 @@ public final class GCMHelper {
 
     private static boolean checkPlayServices() {
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(context);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            return false;
-        }
-        return true;
+        return resultCode == ConnectionResult.SUCCESS;
     }
 }
