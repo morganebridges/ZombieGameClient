@@ -1,7 +1,7 @@
 package com.fourninenine.zombiegameclient;
 
 import android.Manifest;
-import android.app.Activity;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -9,8 +9,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.location.Location;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,11 +20,9 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.view.ViewPropertyAnimator;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.fourninenine.zombiegameclient.httpServices.RESTInterfaces.RESTUserInterface;
 import com.fourninenine.zombiegameclient.httpServices.RESTServices.HttpUserService;
 import com.fourninenine.zombiegameclient.models.User;
@@ -35,7 +33,6 @@ import com.fourninenine.zombiegameclient.models.utilities.ApplicationContextProv
 import com.fourninenine.zombiegameclient.models.utilities.Geomath;
 import com.fourninenine.zombiegameclient.models.utilities.Globals;
 import com.fourninenine.zombiegameclient.services.activityHelpers.CollectionProcessing;
-import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -50,21 +47,15 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolygonOptions;
-import com.google.maps.android.geojson.GeoJsonFeature;
 import com.google.maps.android.geojson.GeoJsonLayer;
 
 import org.json.JSONException;
-import org.springframework.core.io.Resource;
-
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -95,6 +86,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
 
     private long lastNotifiedNetworkFailure = System.currentTimeMillis();
 
+
     Context context = ApplicationContextProvider.getAppContext();
     SharedPreferences preferences = context.getSharedPreferences(context.getString(R.string.user_shared_preferences), MODE_PRIVATE);
 
@@ -107,7 +99,8 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        user = User.getUser();
+
+
         zFreshList = new HashMap<>();
         zombieMarkers = new HashMap<>();
         setContentView(R.layout.activity_main_map);
@@ -128,10 +121,8 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
         }
         mGoogleApiClient.connect();
 
-        //Set the user specific parts of the UI upon setup.
-        String totalKillsString = String.format(context.getString(R.string.map_total_kills_display), user.getTotalKills());
-        ((TextView) findViewById(R.id.mapTotalKillsView)).setText(totalKillsString);
-        String nameString = user.getName();
+        /** TODO : put this back in but up in the hud **/
+        String nameString = Globals.getUser().getName();
         ((TextView) findViewById(R.id.mapNameField)).setText(nameString);
     }
 
@@ -205,14 +196,25 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
             //wait(500);
             System.out.println("No Location Found");
         }
+        User user = Globals.getUser();
 
         user.setLocation(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
         user.addLocation(mLastLocation);
         new wank(mMap).execute();
+        guruOnline();
         updateMap();
         startLocationUpdates();
     }
 
+    public void guruOnline(){
+        TextView myTextView=(TextView)findViewById(R.id.guru_view);
+        Typeface typeFace= Typeface.createFromAsset(getAssets(),"computer_pixel-7.ttf");
+        myTextView.setTypeface(typeFace);
+        user = User.getUser();
+        TextView hpText = (TextView) findViewById(R.id.hp_text_view);
+        hpText.animate().rotation(720).setDuration(120);
+        hpText.setText(String.format(context.getString(R.string.user_hp_text_concise), user.getHp()));
+    }
     @Override
     public void onConnectionSuspended(int i) {
 
@@ -275,11 +277,16 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
                         }
                     }
                     if(beforeSize < zombies.size())
+
                         Globals.showDialog("New Enemies!", "New enemies nearby, they're coming outta the woodwork!", MainMapActivity.this);
 
                 }catch(NullPointerException e){
+                    //TODO: replace magic number
+                    if(System.currentTimeMillis() - lastNotifiedNetworkFailure < 60000)
+                        return;
                     Globals.showDialog("Strange...", "Our network request was succesfull, but " +
                             "there was something wrong with the data", MainMapActivity.this);
+                    lastNotifiedNetworkFailure = System.currentTimeMillis();
                 }
 
                 populateMap();
@@ -324,7 +331,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
 
         }
         if(minDistance > user.getAttackRange())
-            System.out.println("Need some kind of feedback pane")
+            System.out.println("Need some kind of feedback pane");
         //after we've found the closest zombie
 
 
@@ -338,10 +345,6 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
         int tempKills = preferences.getInt(context.getString(R.string.user_total_kills), 0);
         preferences.edit().putInt(context.getString(R.string.user_total_kills), (++tempKills)).apply();
         user.setTotalKills(tempKills);
-        TextView totalKillsView = (TextView) findViewById(R.id.mapTotalKillsView);
-        String updateString = String.format(context.getString(R.string.map_total_kills_display), tempKills);
-        totalKillsView.setText(updateString);
-        //killBtn.setEnabled(true);
         populateMap();
     }
     private void showDialog(String title, String message) {
@@ -647,6 +650,39 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
 
             }
                 return returnMap;
+        }
+        public void printToGuru(String tagline, String message){
+            SharedPreferences prefs = Globals.getPreferences();
+            TextView guVu = (TextView)findViewById(R.id.guru_view);
+            ViewPropertyAnimator animator =  guVu.animate()
+                    .setDuration(125)
+                    .setUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator animation) {
+                            Random rand = new Random();
+                            if(rand.nextInt(10) <= 8)
+                                return;
+                            TextView guVu = (TextView)findViewById(R.id.guru_view);
+                            String currentMessage = (String)guVu.getText();
+                            guVu.animate().setDuration(400).alpha(5.67f);
+                            guVu.setText("<< ALERT -<> : SUSPICIOUS ACTIVITY has been detected in your sector >> :root$");
+                            guVu.append("\n Please be advised, during this particularly volatile time, community " +
+                                    "central will be paying 4 times the usual bounty on Raider's heads. Happy hunting!");
+                            try {
+                                wait(200);
+                                guVu.setText("We will now return you to your regularly scheduled computing.");
+                                guVu.clearComposingText();
+                                guVu.setText(currentMessage);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
+
+
+
+
         }
 
 

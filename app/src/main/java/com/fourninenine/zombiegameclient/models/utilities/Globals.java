@@ -15,11 +15,11 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+
 import java.util.Random;
 
 /**
+ * CAN you really call that an error
  * Created by morganebridges on 6/19/16.
  */
 public class Globals {
@@ -87,9 +87,8 @@ public class Globals {
         }
         return true;
     }
-    public static User getUser() throws InterruptedException {
-        User user = User.getUser();
-        return user;
+    public static User getUser() {
+        return User.getUser();
     }
     public static void showDialog(String title, String message, Activity activity) {
         if(showingAlert != null)
@@ -129,6 +128,9 @@ public class Globals {
     }
     public static double metersToDegrees(double meters){
         return meters / 71695.8;
+    }
+    public static void printToGuru(String title, String message, Activity caller){
+
     }
 }
 

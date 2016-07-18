@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Brandall.us: Boveda: :star::star: Update from php 5.3 to php 5.6 :star::star:</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" type="text/css" href="../application.css">
+</head>
+
+<body class="projects todos">
+  <header>
+    <nav class="global">
+      <a href="../index.html" class="home">Home</a>
+    </nav>
+
+    <header>
+      <h1>Brandall.us: Boveda</h1>
+    </header>
+
+      <nav><a href="../todolists/38557607.html">&larr; Back to the to-do list</a></nav>
+  </header>
+
+  
+<article class="todo">
+  <p>From the to-do list: PCI Compliance Server Updates</p>
+  <h3><span class="content">
+  &#10063; :star::star: Update from php 5.3 to php 5.6 :star::star:
+</span>
+
+
+<span class="metadata">
+    (Joe Levine)
+</span>
+</h3>
+
+  
+    <div class="comments">
+    <h3>Comments</h3>
+
+      <div class="comment">
+        <p><b>Joe Levine</b> on May 24, 2016:</p>
+
+        <div class="content">
+          This gets a little confusing, so I'll try to do my best to be precise in names.<br><br>php 5.6 requires that apache be on at least version 2.4. The server is running amazon linux, which is a fork of redhat. In redhat, and therefore amazon linux, apache is called httpd.<br><br>When I ran the upgrade from httpd 2.2 to 2.4, it invalidated a lot of the server configuration settings. Having read into it a bit now, I've learned that one is not supposed to use the same configuration file as a bunch of modules are missing, and many are incompatible.
+        </div>
+
+        
+      </div>
+      <div class="comment">
+        <p><b>Joe Levine</b> on June  9, 2016:</p>
+
+        <div class="content">
+          The error we're getting on add to cart is <pre>Call to undefined method MDB2_Error::fetchOne() in /var/www/html/bovedainc.com.releases/2016_04_27/ec_addtocart.php on line 16</pre>
+        </div>
+
+        
+      </div>
+  </div>
+
+</article>
+
+</body>
+
+</html>

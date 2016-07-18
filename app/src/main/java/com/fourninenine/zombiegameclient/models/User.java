@@ -32,6 +32,12 @@ public class User{
     private int totalKills;
     private Deque<Location> previousLocations;
 
+    public void setHp(int hp) {
+        this.hp = hp;
+    }
+
+    private int hp;
+
     public double getPerceptionRange() {
         return perceptionRange;
     }
@@ -58,10 +64,16 @@ public class User{
         this.gcmId = gcmId;
         this.totalKills = totalKills;
         this.previousLocations = new LinkedList<>();
+        //just hard code a default
+
+        this.hp = 20;
+        User.save(this);
     }
 
     public User(){
+        this.hp = 20;
         this.previousLocations = new LinkedList<>();
+        User.save(this);
     }
 
     public User(String username) {
@@ -239,5 +251,9 @@ public class User{
 
     public void setAttackRange(double attackRange) {
         this.attackRange = attackRange;
+    }
+
+    public int getHp() {
+        return hp;
     }
 }

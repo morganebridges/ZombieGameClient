@@ -38,6 +38,10 @@
     <string name="username_hint">Enter your username</string>
     <string name="agro_name_ask">You got a name, punk?</string>
     <string name="user_last_updated">0</string>
+    <string name="guru_hint">Cntl-bak: Operations:</string>
+    <string name="user_hp_text_verbose"><![CDATA[<}{[ HP : %d ]}{>]]></string>
+    <string name="user_hp_text_concise">]|HP|[ %d ][</string>
+    <string name="user_cleanse_button_text">\"Wipe your data - something smells funky\"</string>
 
 
 </resources>

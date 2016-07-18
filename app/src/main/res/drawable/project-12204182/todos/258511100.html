@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Brandall.us: Boveda: --- ORIGINAL USER STORY: As Boveda, I&#39;d like it very much if my custom code was reviewed and repaire</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" type="text/css" href="../application.css">
+</head>
+
+<body class="projects todos">
+  <header>
+    <nav class="global">
+      <a href="../index.html" class="home">Home</a>
+    </nav>
+
+    <header>
+      <h1>Brandall.us: Boveda</h1>
+    </header>
+
+      <nav><a href="../todolists/38557607.html">&larr; Back to the to-do list</a></nav>
+  </header>
+
+  
+<article class="todo">
+  <p>From the to-do list: PCI Compliance Server Updates</p>
+  <h3><span class="content">
+  &#10063; --- ORIGINAL USER STORY: As Boveda, I&#39;d like it very much if my custom code was reviewed and repaired for deprecations and incompatibilities in php5.6
+</span>
+
+
+<span class="metadata">
+</span>
+</h3>
+
+  
+    <div class="comments">
+    <h3>Comments</h3>
+
+      <div class="comment">
+        <p><b>Brian LaCrosse</b> on June 21, 2016:</p>
+
+        <div class="content">
+          <div>
+<strong>Joe Levine</strong> <br>With deprecation warnings enabled, no pages display deprecation notices any custom code.<br><br>Notices about code in the wordpress core or a plugin are exempt.</div><div></div><div>
+<strong><br>Morgan Bridges</strong> <br>"<b>Deprecated</b>: mysql_connect(): The mysql extension is deprecated and will be removed in the future: use mysqli or PDO instead in <b>/Users/morganebridges/gitProjects/Boveda/wp-includes/wp-db.php</b> on line <b>1520<br>"</b>
+</div>
+        </div>
+
+        
+      </div>
+      <div class="comment">
+        <p><b>Morgan Bridges</b> on June 22, 2016:</p>
+
+        <div class="content">
+          In order to to get a secure connection to the dev database, I'm going to have to create a profile for localhost in MDB2. As long as we can't stay connected to the database, we are never going to be able to diagnose/ fix the other problems with the site. 
+        </div>
+
+        
+      </div>
+      <div class="comment">
+        <p><b>Morgan Bridges</b> on June 24, 2016:</p>
+
+        <div class="content">
+          Here is a (non-exhaustive) list of the most critical (breaking) deprecation / code style issues that we've come across:<br><br>1. mysql deprecated -&gt; need to switch to mysqli. This is relatively easy to deal with but it touches other things, such as the MDB2 package that is installed through pear. Dealing with this will require reviewing many and in some files most interactions with the database. One of the main issues is that there may have been implicit casting in earlier versions of php for rows that contain a single value per tuple. <br><br>This means that there are many occurrences where mysql return objects are being processed as an Integer or a String, which throws a fatal exception.<br><br>2. Parsing issues - systemic and site-wide. <br><ul>
+<li>Older versions of PHP would allow for more loose use of implicitly defined constants as array indexes, which is no longer valid. PHP 5.6 will try (with varying levels of success) to assign a value for these array accessors, but my assumption is that this logic leaves the site with a significant performance hit. </li>
+<li>Older versions of PHP also allow for variable values to be used within Strings (in this case mostly for constructing sql queries). Many of these break or don't parse right, which returns a database error object instead of a result, breaking the subsequent code.</li>
+</ul><br>3. Interdependence on shared scripts, some of which patch around version issues rather than fixing them. There is a directory called bovedashared that all of the sites on the server point to. This is not ideal, as we can't modify these files without the risk of breaking other sites, so I've moved the custom DB script that seems to be overriding .htaccess and wp configuration to a local location for our dev site so that we can have control. <br><br>4. (less critical but performance and annoyance issue) - We have some deprecated plugin issues - PHP 5.6 doesn't like the kind of constructor in some of our widgets. We may want to either refresh 
+        </div>
+
+        
+      </div>
+  </div>
+
+</article>
+
+</body>
+
+</html>
