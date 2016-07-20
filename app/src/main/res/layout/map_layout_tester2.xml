@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:weightSum="1">
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight=".05">
+
+            <Button
+                android:id="@+id/userPortrait"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:onClick="updateFromView"
+                android:background="@drawable/filmnoir48"
+                android:nestedScrollingEnabled="false"
+                android:layout_column="0"
+                android:layout_row="0"
+                android:layout_marginLeft="10dp"
+                android:layout_marginBottom="5dp"
+                android:layout_gravity="center_vertical" />
+
+            <TextSwitcher
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textSwitcher"
+                android:layout_column="1"
+                android:layout_row="0" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/map_total_kills_initial"
+                android:id="@+id/mapTotalKillsView"
+                android:width="144dp"
+                android:layout_column="1"
+                android:layout_row="0"
+                android:layout_gravity="top|right"
+                android:layout_marginTop="10dp" />
+        </GridLayout>
+
+        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:map="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            tools:context="com.fourninenine.zombiegameclient.MainMapActivity"
+            android:layout_gravity="fill_horizontal"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight=".95" />
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:text="Loading telemetry and sound pressure varience analysis."
+                android:id="@+id/textView2"
+                android:background="@color/abc_search_url_text_pressed"
+                android:textSize="7pt"
+                android:textColor="@android:color/holo_green_light"
+                android:layout_row="0"
+                android:layout_column="0"
+                android:layout_columnSpan="2"
+                android:layout_gravity="fill_horizontal"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="5dp"
+                android:gravity="center_vertical|center_horizontal" />
+
+            <Button
+                android:id="@+id/killButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="attackZombie"
+                android:background="@drawable/weapon_fist"
+                android:layout_row="1"
+                android:layout_column="0"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="fill"
+                android:layout_marginTop="5dp"
+                android:layout_rowSpan="2" />
+
+            <Button
+                android:id="@+id/shootButton"
+                android:text="PUNCH!"
+                android:layout_height="75dp"
+                android:onClick="attackZombie"
+                android:foregroundGravity="top"
+                android:layout_row="1"
+                android:layout_column="1"
+                android:layout_width="wrap_content"
+                android:layout_gravity="fill"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_columnSpan="1" />
+
+        </GridLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

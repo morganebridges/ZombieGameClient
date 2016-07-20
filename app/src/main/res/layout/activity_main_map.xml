@@ -5,6 +5,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"></GridLayout>
+
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:map="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
@@ -28,8 +34,7 @@
         android:layout_below="@+id/mapTotalKillsView"
         android:layout_alignEnd="@+id/killButton"
         android:layout_marginEnd="24dp"
-        android:nestedScrollingEnabled="false"
-         />
+        android:nestedScrollingEnabled="false" />
     <Button
         android:id="@+id/killButton"
         android:layout_width="50dp"
