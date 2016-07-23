@@ -31,6 +31,9 @@ public class Globals {
     //This is a reference flag I'll use to see
     private static boolean inApp = false;
 
+    //Turn on this flag if you want to have optional exceptions thrown at particular places in your workflow.
+    public static boolean bugSmashing = true;
+
     private GCMHelper gcmHelper = new GCMHelper(MyApp.getAppContext());
 
     public static ArrayList<TokenItem> getTokenList() {
@@ -48,14 +51,6 @@ public class Globals {
         tokenList = new ArrayList<TokenItem>();
         tokenList.add(token);
     }
-
-    private Globals Globals(){
-        return this;
-    }
-
-    public static void setCurrentUser(User currentUser) {
-        currentUser = currentUser;
-    }
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final String TAG = "MainActivity";
     public static Globals instance() {
@@ -66,9 +61,6 @@ public class Globals {
 
     public static void setUserToken(TokenItem userToken) {
         Globals.userToken = userToken;
-    }
-    public static User getCurrentUser() {
-        return currentUser;
     }
     public static TokenItem getUserToken(){
         return userToken;
@@ -100,7 +92,9 @@ public class Globals {
         alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+
                         dialog.dismiss();
+
                     }
                 });
         alertDialog.show();

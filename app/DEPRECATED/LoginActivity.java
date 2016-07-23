@@ -81,7 +81,6 @@ public class LoginActivity extends AppCompatActivity{
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
-                User.save(response.body());
                 asyncLogin(response);
 
 
@@ -104,7 +103,8 @@ public class LoginActivity extends AppCompatActivity{
             System.out.println("break here");
             if(user != null){
                 User.save(user);
-            } else System.out.println("User null after login"); if (Globals.checkPlayServices()) {
+            } else System.out.println("User null after login");
+            if (Globals.checkPlayServices()) {
                 // Start IntentService to register this application with GCM.
 
                 Intent intent = new Intent(this, RegistrationIntentService.class);

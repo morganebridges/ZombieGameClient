@@ -80,14 +80,16 @@ public class LoginActivityFinal extends AppCompatActivity implements LoaderCallb
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+
+        /* Should be the one and only call to set the app context */
         context = this.getApplicationContext();
         ApplicationContextProvider.setContext(context);
-
-        preferences = context.getSharedPreferences(context.getString(R.string.user_shared_preferences), MODE_PRIVATE);
+        preferences = Globals.getPreferences();
 
         setContentView(R.layout.activity_login_activity_final);
         Button mNameSignInButton = (Button) findViewById(R.id.sign_in_button);
         attachSignInButtonHandler(mNameSignInButton);
+
         // Set up the login form.
         mNameView = (AutoCompleteTextView) findViewById(R.id.user_name);
         populateAutoComplete();
@@ -135,10 +137,6 @@ public class LoginActivityFinal extends AppCompatActivity implements LoaderCallb
             @Override
             public void onClick(View view) {
                 loginLogic();
-                /*String name;
-                if(User.isSavedUser())
-                    login();
-                else if((name = mNameView.getText().toString()).length() > 0) createUser(name)*/
 
             }
         });
@@ -147,6 +145,7 @@ public class LoginActivityFinal extends AppCompatActivity implements LoaderCallb
     private void loginLogic(){
 
         if(User.isSavedUser()){
+
             login(preferences.getLong(context.getString(R.string.user_id), -1));
         }else{
             String name = (mNameView.getText().toString());
@@ -194,11 +193,14 @@ public class LoginActivityFinal extends AppCompatActivity implements LoaderCallb
     private void createUser(String userName){
         HttpUserService userService = new HttpUserService();
 
+        //Lets make sure that we clear the preferences
         Call<User> call = userService.createUser(userName);
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
+
                 User.save(response.body());
+
                 registerGCM(response);
                 Intent mapIntent = new Intent(ApplicationContextProvider.getAppContext(), MainMapActivity.class);
                 startActivity(mapIntent);
@@ -379,6 +381,14 @@ public class LoginActivityFinal extends AppCompatActivity implements LoaderCallb
 
     public void loginClicked(View view) {
 
+    }
+
+    public void cleanseData(View view) {
+        Globals.getPreferences().edit().clear().apply();
+
+        Intent loginIntent = new Intent(this, LoginActivityFinal.class);
+        Globals.showDialog("<G>[U]<R>[U]:$Data Cleansed", "Sure, I'll keep your shameful secret. \n EOF",LoginActivityFinal.this);
+        startActivity(loginIntent);
     }
 
 

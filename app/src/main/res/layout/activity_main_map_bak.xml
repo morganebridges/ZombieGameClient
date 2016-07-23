@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:clickable="false">
+    <RadioGroup
+        android:id="@+id/radio_group_list_selector"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#80000000"
+        android:padding="4dp"
+        android:weightSum="1"
+        android:layout_row="0"
+        android:layout_column="0">
+
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="1"
+            android:measureWithLargestChild="false"
+            android:gravity="fill_horizontal|center_horizontal"
+            android:backgroundTintMode="src_over"
+
+            android:backgroundTint="@android:color/background_light"
+            android:baselineAligned="false"
+            android:clickable="true">
+
+            <Button
+                android:id="@+id/hud_hp_icon"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginTop="4dp"
+                android:onClick="updateFromView"
+                android:background="@drawable/healthicon"
+                android:layout_marginEnd="3dp"
+                android:foregroundGravity="center_vertical"
+                android:nestedScrollingEnabled="false"
+                android:layout_weight="0.03"
+                android:singleLine="false"
+                android:shadowColor="#a41c1c"
+                android:layout_marginStart="7dp"
+                android:layout_marginBottom="4dp"
+                 />
+
+            <Button
+                android:id="@+id/userPortrait"
+                android:layout_width="56dp"
+                android:layout_height="45dp"
+                android:onClick="updateFromView"
+                android:background="@drawable/filmnoir48"
+                android:layout_marginEnd="7dp"
+                android:foregroundGravity="top|left"
+                android:nestedScrollingEnabled="false"
+                android:layout_weight="0.03"
+                android:singleLine="false"
+                android:shadowColor="#a41c1c"
+                android:layout_marginRight="8dp"
+                android:layout_marginLeft="8dp"
+                android:alpha=".7"
+                android:backgroundTintMode="src_over"
+                android:backgroundTint="#c5000000"
+                android:breakStrategy="high_quality"
+                android:contextClickable="false"
+                android:elegantTextHeight="false"
+                android:text="name"
+                android:textAlignment="gravity"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                />
+
+
+            <Button android:id="@+id/hud_guru_icon"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginTop="4dp"
+                android:onClick="guruActivity"
+                android:background="@drawable/gurubrain"
+                android:layout_marginEnd="25dp"
+                android:foregroundGravity="right|center"
+                android:nestedScrollingEnabled="false"
+                android:layout_weight="0.03"
+                android:singleLine="false"
+                android:shadowColor="#a41c1c"
+                android:layout_marginStart="180dp"
+                android:layout_marginBottom="4dp"
+                android:layout_gravity="center_vertical" />
+
+        </LinearLayout>
+
+    </RadioGroup>
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:layout_columnWeight="1.2"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="295dp"
+        tools:context="com.fourninenine.zombiegameclient.MainMapActivity"
+        android:layout_gravity="center"
+        android:foregroundGravity=""
+        android:layout_row="2"
+        android:layout_column="0">
+
+    </fragment>
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:weightSum="5"
+        android:background="@android:drawable/gallery_thumb"
+        android:measureWithLargestChild="false"
+        android:gravity="fill_horizontal|bottom"
+        android:layout_row="4"
+        android:layout_gravity="bottom">
+        <TextSwitcher
+            android:layout_width="fill_parent"
+            android:id="@+id/textSwitcher"
+            android:layout_height="160dp"
+            android:background="@android:drawable/menu_full_frame">
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:text=".::()-GURU-()::.Loading telemetry and sound pressure varience analysis."
+                android:id="@+id/guru_view"
+                android:layout_marginBottom="4dp"
+                android:textSize="24sp"
+                android:textColor="@android:color/holo_green_light"
+                android:focusableInTouchMode="false"
+                android:hint="@string/guru_hint"
+                android:enabled="true"
+                android:background="#000000"
+                android:gravity="center_vertical"
+                android:textIsSelectable="false"
+                android:elegantTextHeight="false" />
+        </TextSwitcher>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="405dp"
+        android:layout_height="65dp"
+        android:layout_gravity="top"
+        android:layout_marginStart="6dp"
+        android:layout_marginBottom="6dp"
+        android:layout_marginEnd="6dp"
+        android:background="@drawable/screenborder" >
+
+        <Button
+            android:id="@+id/killButton"
+            android:layout_width="55dp"
+            android:layout_marginEnd="55dp"
+            android:layout_height="wrap_content"
+            android:onClick="attackZombie"
+            android:background="@drawable/infantryknife"
+
+            android:layout_gravity="start|bottom" />
+
+        <Button
+            android:id="@+id/shootButton"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:onClick="attackZombie"
+            android:foregroundGravity="top"
+            android:layout_gravity="bottom|center_horizontal"
+            android:background="@drawable/firinggun50" />
+    </LinearLayout>
+    </LinearLayout>
+
+
+</GridLayout>

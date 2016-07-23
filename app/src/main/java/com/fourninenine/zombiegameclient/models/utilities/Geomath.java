@@ -1,5 +1,8 @@
 package com.fourninenine.zombiegameclient.models.utilities;
 
+import android.location.Location;
+import android.util.Log;
+
 import com.google.android.gms.maps.model.LatLng;
 
 /**
@@ -15,9 +18,10 @@ public class Geomath {
      /*::   Pretty sure we are using meters here. for the "default" unit
      /*::  Definitions:
      /*    South latitudes are negative, east longitudes are positive
+     /*    This method returns the distance in MILES by default.
      /*/
     public static double getDistance(double lat1, double lon1, double lat2, double lon2, String unit){
-        double theta = lon1 - lon2;
+        double theta = Math.abs(lon1 - lon2);
         double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
         dist = Math.acos(dist);
         dist = rad2deg(dist);
@@ -29,10 +33,13 @@ public class Geomath {
         }
         return dist;
     }
-
-    public static double getDistance (LatLng latLng1, LatLng latLng2, String unit){
-        return getDistance(latLng1.latitude, latLng1.longitude, latLng2.latitude, latLng2.longitude, unit );
+    public static double getDistanceMeters(double lat1, double lon1, double lat2, double lon2){
+        double dist = getDistance( lat1,  lon1,  lat2,  lon2, "K")/1000.01;
+        Log.d("Distance meters; ", "DIST : " + dist);
+        return getDistance( lat1,  lon1,  lat2,  lon2, "K")/1000.01;
     }
+
+
 
 
     /**
@@ -45,5 +52,12 @@ public class Geomath {
     }
     private static double rad2deg(double rad) {
         return (rad * 180 / Math.PI);
+    }
+
+    public static double milesToFeet(double miles){
+        return miles * 5280.00;
+    }
+    public static double milesToMeters(double miles){
+        return (miles * 5280.00) / 3.0001;
     }
 }

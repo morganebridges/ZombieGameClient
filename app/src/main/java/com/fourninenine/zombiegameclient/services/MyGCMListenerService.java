@@ -84,8 +84,9 @@ public class    MyGCMListenerService extends GcmListenerService {
 
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.common_google_signin_btn_icon_dark)
-                .setContentTitle("Zed Reckoning")
+                .setSmallIcon(R.drawable.gurubrain)
+                .setOnlyAlertOnce(true)
+                .setContentTitle("< G}{U}{R}{U} > : Zed Reckoning")
                 .setContentText(message)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)

@@ -1,10 +1,12 @@
 package com.fourninenine.zombiegameclient.models;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.util.Log;
 
+import com.fourninenine.zombiegameclient.LoginActivityFinal;
 import com.fourninenine.zombiegameclient.R;
 import com.fourninenine.zombiegameclient.models.utilities.ApplicationContextProvider;
 import com.fourninenine.zombiegameclient.models.utilities.Globals;
@@ -13,15 +15,13 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.Queue;
 
 /**
  * A user model class with methods to retrieve and save itself to shared preferences
  */
 public class User{
-
-
     Context context = ApplicationContextProvider.getAppContext();
+
     private long id = R.string.INVALID_VALUE;
     private String name;
     private double latitude;
@@ -31,6 +31,14 @@ public class User{
     private String gcmId;
     private int totalKills;
     private Deque<Location> previousLocations;
+    public static long lastModified = System.currentTimeMillis();
+
+
+    private float perceptionRange;
+    private float attackRange;
+
+    private static final Object lockObject = new Object();
+
 
     public void setHp(int hp) {
         this.hp = hp;
@@ -38,20 +46,20 @@ public class User{
 
     private int hp;
 
-    public double getPerceptionRange() {
+    public float getPerceptionRange() {
         return perceptionRange;
     }
 
-    public void setPerceptionRange(double perceptionRange) {
+    public void setPerceptionRange(float perceptionRange) {
         this.perceptionRange = perceptionRange;
     }
 
-    private double perceptionRange;
-    private double attackRange;
 
-    private static final Object lockObject = new Object();
+    /* Just to be clear, to myself more than anyone else, we should never call any constructors for the user class. That is the server's job.
+        These only exist so that we may instantiate the active user (very carefully and only when the data is verified).
 
-    public User(String name, long id, double latitude, double longitude, int serum, int ammo, String gcmId, int totalKills, double attackRange){
+     */
+    public User(String name, long id, double latitude, double longitude, int serum, int ammo, String gcmId, int totalKills, float attackRange, float perceptionRange, int hp ){
         //only set an id if it is valid
         if(id > 0)
             this.id = id;
@@ -65,15 +73,13 @@ public class User{
         this.totalKills = totalKills;
         this.previousLocations = new LinkedList<>();
         //just hard code a default
-
-        this.hp = 20;
-        User.save(this);
+        this.perceptionRange = perceptionRange;
+        this.hp = hp;
     }
 
     public User(){
         this.hp = 20;
         this.previousLocations = new LinkedList<>();
-        User.save(this);
     }
 
     public User(String username) {
@@ -85,22 +91,18 @@ public class User{
     public static User getUser() {
         Context context = ApplicationContextProvider.getAppContext();
         SharedPreferences preferences = Globals.getPreferences();
-        synchronized (lockObject){
-            while(context == null) {
-                System.out.println("Application context null");
-                try{
-                    //lockObject.wait(50);
-                }catch(Exception e){
-                    return new User();
-                }
-            }
-        }
-
 
         long id = preferences.getLong(
                 context.getString(R.string.user_id), -1);
+        if(id == -1){
+            Intent loginIntent = new Intent(ApplicationContextProvider.getAppContext(), LoginActivityFinal.class);
+            loginIntent.putExtra("error", true);
+
+        }
+
         String name = preferences.getString(
-                context.getString(R.string.user_name), "generic jerk");
+                context.getString(R.string.user_name), "Invalid data");
+
         double latitude = Double.longBitsToDouble(preferences.getLong(
                 context.getString(R.string.user_latitude), -1));
         double longitude = Double.longBitsToDouble(preferences.getLong(
@@ -113,20 +115,44 @@ public class User{
                 context.getString(R.string.user_gcmid), "");
         int totalKills = preferences.getInt(
                 context.getString(R.string.user_total_kills), 0);
-        double attackRange = preferences.getFloat("attackRange", 10);
+        int hp = preferences.getInt(context.getString(R.string.hp), 20);
+        float attackRange = preferences.getFloat(context.getString(R.string.user_attack_range),10);
+        float perceptionRange = (preferences.getFloat(
+                context.getString(R.string.user_perception_range), -1));
 
-        return  new User(name, id, latitude, longitude, serum, ammo, gcmId, totalKills, attackRange);
+        User tempUser =  new User(name, id, latitude, longitude, serum, ammo, gcmId, totalKills, attackRange, perceptionRange, hp);
+        if(!tempUser.isIdValid()){
+            System.out.println(" **** Invalid user state from prefs (User.getUser())****");
+            System.out.println(tempUser.toString());
+            System.out.println("*** *** State of preferences *** ***");
+            if(Globals.bugSmashing)
+                throw new IllegalStateException("Data corruption in shared preferences");
+        }
+        return tempUser;
+
     }
 
-    public static void save(User user) throws IllegalStateException{
-        if(user == null){
-            return;
+    public static boolean save(User user) throws IllegalStateException{
+        if(user == null ){
+            Log.d("User.save - null arg", "A null user was passd to method that saves to prefs");
+            if(Globals.bugSmashing)
+                throw new IllegalStateException("(User.save) Null user passed into save method");
+            return false;
+
         }
+        else if(!isUserValid(user)){
+            Log.d("User.save - null arg", "A null user was passd to method that saves to prefs");
+            Log.d("User invalid", user.toString());
+            if(Globals.bugSmashing)
+                throw new IllegalStateException("(User.save) Attempting to corrupt master user record with bad data.");
+        }
+
         Context context = ApplicationContextProvider.getAppContext();
         SharedPreferences preferences = context.getSharedPreferences(
                 context.getString(R.string.user_shared_preferences), Context.MODE_PRIVATE);
 
         SharedPreferences.Editor editor = preferences.edit();
+
         editor.putLong(context.getString(R.string.user_id), user.getId());
         editor.putString(context.getString(R.string.user_name), user.name);
         editor.putLong(context.getString(R.string.user_latitude),
@@ -138,7 +164,12 @@ public class User{
         editor.putString(context.getString(R.string.user_gcmid), user.gcmId);
         editor.putInt(context.getString(R.string.user_total_kills), user.totalKills);
 
+        editor.putFloat(context.getString(R.string.user_perception_range),
+                user.getAttackRange());
+        editor.putFloat(context.getString(R.string.user_attack_range), user.attackRange);
+
         editor.apply();
+        return true;
     }
 
     // getters and setters
@@ -155,8 +186,8 @@ public class User{
     }
 
     public void setLocation(LatLng location) {
-        this.latitude = location.latitude;
-        this.longitude = location.longitude;
+        setLatitude(location.latitude);
+        setLongitude(location.longitude);
     }
 
     public double getLatitude() {
@@ -204,6 +235,7 @@ public class User{
     }
 
     public void setGcmId(String gcmId) {
+        Globals.getPreferences().edit().putString("gcmId", gcmId).apply();
         this.gcmId = gcmId;
     }
 
@@ -220,7 +252,14 @@ public class User{
         Context context = ApplicationContextProvider.getAppContext();
         SharedPreferences preferences = context.getSharedPreferences(context.getString(R.string.user_shared_preferences), Context.MODE_PRIVATE);
         //Globals.showDialog("New User","Choose a user name", LoginActivity.this);
-        return preferences.getLong(context.getString(R.string.user_id), -1) > 0;
+        long idCheck = Long.MAX_VALUE;
+        //See if w learn anything from just the ids
+        if(!((idCheck = preferences.getLong(context.getString(R.string.user_id), -1)) > 0 && (idCheck < R.string.USERS_UPPER_BOUND)))
+            return false;
+        User testUser = getUser();
+        return(isUserValid(getUser()));
+
+
     }
     public Location popLastLocation(){
         if(previousLocations.size() > 0){
@@ -245,15 +284,29 @@ public class User{
         return previousLocations.size() > 0;
     }
 
-    public double getAttackRange() {
+    public float getAttackRange() {
         return attackRange;
     }
 
-    public void setAttackRange(double attackRange) {
+    public void setAttackRange(float attackRange) {
         this.attackRange = attackRange;
     }
 
     public int getHp() {
         return hp;
+    }
+
+    public static boolean isUserValid(User user){
+        boolean valid = true;
+        if(!user.isIdValid())
+            return false;
+        if(user.getName() == null)
+            return false;
+        return true;
+    }
+    public boolean isIdValid(){
+        if(id < 1 || id > R.string.USERS_UPPER_BOUND)
+            return false;
+        return true;
     }
 }
