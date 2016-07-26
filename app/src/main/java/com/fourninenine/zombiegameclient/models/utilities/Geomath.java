@@ -34,9 +34,7 @@ public class Geomath {
         return dist;
     }
     public static double getDistanceMeters(double lat1, double lon1, double lat2, double lon2){
-        double dist = getDistance( lat1,  lon1,  lat2,  lon2, "K")/1000.01;
-        Log.d("Distance meters; ", "DIST : " + dist);
-        return getDistance( lat1,  lon1,  lat2,  lon2, "K")/1000.01;
+        return getDistance( lat1,  lon1,  lat2,  lon2, "K")*1000.01;
     }
 
 

@@ -17,6 +17,8 @@ public class Zombie {
     boolean alive;
     Location location;
 
+    boolean underAttack;
+
     public Zombie(long id, double latitude, double longitude, int hp, boolean alive) {
 
         this.latitude = latitude;
@@ -34,19 +36,27 @@ public class Zombie {
     public long getId(){
         return id;
     }
+
     public boolean isAlive(){
         return alive;
     }
-
     public void setLocation(double lat, double lng){
         Location location = new Location(this.label);
         location.setLatitude(lat);
         location.setLongitude(lng);
         setLocation(location);
     }
+
     public void setLocation(Location location) {
         this.location = location;
         this.longitude = location.getLongitude();
         this.latitude = location.getLatitude();
+    }
+    public boolean isUnderAttack() {
+        return underAttack;
+    }
+
+    public void setUnderAttack(boolean underAttack) {
+        this.underAttack = underAttack;
     }
 }

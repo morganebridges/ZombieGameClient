@@ -1,4 +1,4 @@
-package com.fourninenine.zombiegameclient.customViews;
+package com.fourninenine.zombiegameclient.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;

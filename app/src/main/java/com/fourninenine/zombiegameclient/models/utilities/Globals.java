@@ -92,11 +92,10 @@ public class Globals {
         alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-
                         dialog.dismiss();
-
                     }
                 });
+        showingAlert = alertDialog;
         alertDialog.show();
     }
     public static SharedPreferences getPreferences(){

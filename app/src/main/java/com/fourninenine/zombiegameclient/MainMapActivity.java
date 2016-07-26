@@ -61,20 +61,20 @@ import org.json.JSONException;
 import org.springframework.core.io.Resource;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainMapActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
-
-    //Activity class level flag to ensure we only process one attack at a time
-    static boolean alreadyAttacking = false;
 
     //Map and location based fields
     public static GoogleMap mMap;
@@ -106,7 +106,10 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
     /* /targetting */
 
     /* View manipulation and access fields */
+    long lastGuruPrint;
     ResizeAnimation resizeAnimation;
+
+
     /* /views */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,6 +158,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
         googleMap.getUiSettings().setScrollGesturesEnabled(false);
 
 
+
            /* try {
                 mGameLayer = new GeoJsonLayer(mMap, R.raw.midnight_commander_theme, context);
             } catch (IOException e) {
@@ -182,11 +186,10 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
                 boolean markerInRange;
                 Double aRange = (double)(preferences.getFloat(context.getString(R.string.user_attack_range), 10));
                 if(Geomath.getDistanceMeters(mLastLocation.getLatitude(), mLastLocation.getLongitude(), marker.getPosition().latitude,marker.getPosition().longitude) > aRange) {
+                    printToGuru("Out of Range", "You're going to need a longer stick.");
                     return false;
-
                 }
-
-                else return targetZombie(marker);
+                return targetZombie(marker);
             }
 
         });
@@ -208,8 +211,11 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
 
     }
     private boolean targetZombie(Marker marker) {
+        marker.showInfoWindow();
         long zomId = -1;
         Zombie tgtZom;
+        if(zombieMarkers == null)
+            zombieMarkers = new HashMap<String, Long>();
 
         try {
             zomId = zombieMarkers.get(marker.getId());
@@ -296,6 +302,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
         user.setLatitude(mLastLocation.getLatitude());
         user.setLongitude(mLastLocation.getLongitude());
         user.addLocation(mLastLocation);
+
         User.save(user);
         //new wank(mMap).execute();
         updateMap();
@@ -439,14 +446,18 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
             }
 
         }
-        if(minDistance > user.getAttackRange())
-            System.out.println("Need some kind of feedback pane");
+        if(minDistance > user.getAttackRange())      {
+
+        }
+
         //after we've found the closest zombie
 
 
         if (closest != null) {
             UserActionDto dto = new UserActionDto(user.getId(), user.getLatitude(), user.getLongitude(), UserActionDto.Action.ATTACK);
             dto.setTarget(closest.getId());
+
+
             Call<ClientUpdateDto> zombieCall = userService.update(dto);
             resolveAttack(zombieCall, zombieIndex);
             //zombies.remove(closest);
@@ -520,6 +531,10 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
 
     public GoogleMap populateMap(){return populateMap(false);}
     public GoogleMap populateMap(Boolean isZoomedIn) {
+        String setString = context.getString(R.string.guru_display_name) + " " + new Date();
+        if(System.currentTimeMillis() - lastGuruPrint > 3000)
+            ((TextView)findViewById(R.id.guru_text_view)).setText(setString);
+
         //While targetting we don't want to dump the markers we are usiung
         zombieMarkers.clear();
         mMap.clear();
@@ -602,9 +617,12 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
                 ClientUpdateDto dto  = response.body();
                 zombies = CollectionProcessing.zombieListToMap(dto.getZombies());
                 Zombie zombie = zombies.get(dto.getTargetId());
+                tgtObj = null;
                 if (zombie == null) {
-
+                    TextView totalKills = (TextView) findViewById(R.id.totalKills);
+                    totalKills.setText("Total Kills: " + user.getTotalKills());
                     printToGuru("Evisceration", "Total destruction, just a stinkin smudge on the sidewalk.");
+
                     return;
                 }
                 //remove the zombie from the list
@@ -628,6 +646,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
                 System.out.println("ERROR");
                 Button killButton = (Button) findViewById(R.id.killButton);
                 killButton.setEnabled(true);
+                tgtObj = null;
             }
         });
         return null;
@@ -644,21 +663,32 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
             Log.d("tgtObj not null", "Attacking a targetted zombie.");
             Log.d("tgtObj ", "ID : " + tgtObj.getEid());
             Log.d("tgtObj ", "MarkerId: " +  tgtObj.getMarkerId());
+            Zombie tZombie = zombies.get(tgtObj.getEid())     ;
+            LatLng zomLoc = tZombie.getLocation();
+            if(isTargetInRange(zomLoc)) {
 
-            LatLng zomLoc = (zombies.get(tgtObj.getEid())).getLocation();
-            double dist = Geomath.getDistance(user.getLatitude(), zomLoc.latitude, user.getLongitude() , zomLoc.longitude, "M");
-            printToGuru("Calculating distance: ","Distance : " + dist);
-
-            if(dist > user.getAttackRange()){
-                printToGuru("Out of Range", "Target Locked, but is not within melee range. {ZID : " + zombies.get(tgtObj.getEid()) + "}");
+                printToGuru("Quick and Quiet", "Targetting Zombie wit: { ID: " + tgtObj.getEid() + "}");
+                tZombie.setUnderAttack(true);
+                killTargetZombie(tgtObj.getEid());
 
             }
-            printToGuru("Quick and Quiet", "Targetting Zombie wit: { ID: " + tgtObj.getEid() + "}");
-            killTargetZombie(tgtObj.getEid());
+
         }else{
-            printToGuru("Targetting failed: ", "Lashing outy at nearest target");
+            printToGuru("No Targetting", "Lashing out at nearest target");
             killNearest();
         }
+    }
+
+    private boolean isTargetInRange(LatLng zomLoc) {
+        double dist = Geomath.getDistance(user.getLatitude(), zomLoc.latitude, user.getLongitude() , zomLoc.longitude, "M");
+         printToGuru("Calculating distance: ","Distance : " + dist);
+
+        /*if(dist > user.getAttackRange()){
+
+           printToGuru("Out of Range", "Target Locked, but is not within melee range. {ZID : " + zombies.get(tgtObj.getEid()) + "}");
+           return false;
+        }*/
+        return true;
     }
 
     private void killTargetZombie(long targetZombieId) {
@@ -674,12 +704,15 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
             public void onResponse(Call<ClientUpdateDto> call, Response<ClientUpdateDto> response) {
                 ClientUpdateDto dto = response.body();
                 if(dto == null || dto.getZombies() == null){
+                   tgtObj = null;
+                   targetting = false;
                    updateMap();
                 }else{
-                    Log.d("Null", "Something was null");
                     CollectionProcessing.zombieListToMap(dto.getZombies());
                     user = dto.getUser();
                     User.save(user);
+                    tgtObj = null;
+                    targetting = false;
                     populateMap();
                 }
 
@@ -692,6 +725,7 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
                 if(System.currentTimeMillis() - lastNotifiedNetworkFailure > 50000)
                 Globals.showDialog("Network Problems", "Sorry, but you seem to be experiencing network " +
                         "issues.", MainMapActivity.this);
+                tgtObj = null;
             }
         });
     }
@@ -755,9 +789,10 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
     }
 
     public void printToGuru(String tagline, String message){
+        lastGuruPrint = System.currentTimeMillis();
         SharedPreferences prefs = Globals.getPreferences();
         TextView guVu = (TextView)findViewById(R.id.guru_text_view);
-        guVu.setText("<{ GURU }>: " + message + "\n");
+        guVu.setText("<{ GURU" + new Date()  + " }>: " + message + "\n");
         ViewPropertyAnimator animator =  guVu.animate()
                 .setDuration(200)
                 .setUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -765,7 +800,20 @@ public class MainMapActivity extends FragmentActivity implements OnMapReadyCallb
                     public void onAnimationUpdate(ValueAnimator animation) {
                     }
                 });
+       /* Timer timer = new Timer();
+        timer.schedule(new TimerTask(){
+
+                           @Override
+                           public void run() {
+                               TextView guVu = (TextView)findViewById(R.id.guru_text_view);
+                               (MainMapActivity.this).printToGuru("", "<{ GURU " + new Date()  + " }>:");
+                           }
+                       }
+
+
+                ,1, 2000);*/
     }
+
     public void guruGlitch(){
         Random rand = new Random();
         if(rand.nextInt(10) <= 8)

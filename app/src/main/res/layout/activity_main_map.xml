@@ -29,6 +29,17 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginBottom="5dp"
                 android:layout_gravity="center_vertical" />
+            <TextView
+                android:id="@+id/totalKills"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:onClick="updateFromView"
+                android:nestedScrollingEnabled="false"
+                android:layout_column="1"
+                android:layout_row="0"
+                android:layout_marginStart="10dp"
+                android:layout_marginBottom="5dp"
+                android:layout_gravity="center_vertical" />
 
             <TextSwitcher
                 android:layout_width="wrap_content"

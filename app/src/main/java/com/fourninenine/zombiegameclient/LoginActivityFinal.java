@@ -203,6 +203,7 @@ public class LoginActivityFinal extends AppCompatActivity implements LoaderCallb
 
                 registerGCM(response);
                 Intent mapIntent = new Intent(ApplicationContextProvider.getAppContext(), MainMapActivity.class);
+                preferences.edit().putBoolean("first_login", true).apply();
                 startActivity(mapIntent);
             //TODO: get a location service call in here to try to get a jump  on that.
 

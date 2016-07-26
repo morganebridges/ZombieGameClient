@@ -48,7 +48,7 @@
     <string name="plus_button_string">+</string>
     <string name="user_perception_range">perceptionRange</string>
     <string name="user_attack_range">attackRange</string>
-
+    <string name="guru_display_name">{GURU } :  </string>
 
 
 </resources>
