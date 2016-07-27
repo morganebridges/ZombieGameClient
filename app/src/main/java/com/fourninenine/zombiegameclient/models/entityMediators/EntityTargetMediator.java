@@ -2,6 +2,10 @@ package com.fourninenine.zombiegameclient.models.entityMediators;
 
 import android.location.Location;
 
+import com.fourninenine.zombiegameclient.MainMapActivity;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 /**
  * Created by morganebridges on 7/21/16.
  */
@@ -10,7 +14,9 @@ public class EntityTargetMediator {
     EntityTargetMediator.Entities selection;
     long eid;
     String markerId;
+    Marker marker;
     Location userLocation;
+
 
     public Location getUserLocation() {
         return userLocation;
@@ -24,6 +30,11 @@ public class EntityTargetMediator {
         return eid;
     }
     public String getMarkerId(){return markerId;}
+    public Marker getMarker(){return marker;};
+
+    public void setMarker(Marker marker) {
+        this.marker = marker;
+    }
 
 
     public enum Entities {
@@ -50,12 +61,15 @@ public class EntityTargetMediator {
      * @param userLocation -
      * @return
      */
-    public EntityTargetMediator(Entities selection, long eid, Location userLocation, String markerId) {
+    public EntityTargetMediator(Entities selection, long eid, Location userLocation, Marker marker) {
         this.selection = selection;
         this.eid = eid;
-        this.markerId = markerId;
-        this.userLocation = userLocation;
+        this.marker = marker;
+        this.markerId = marker.getId();
+        //this.entityMarker = entityMarker;
+
     }
+
 
 
 }

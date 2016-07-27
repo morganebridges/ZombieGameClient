@@ -1,8 +1,13 @@
 package com.fourninenine.zombiegameclient.models;
 
+
 import android.location.Location;
 
 import com.google.android.gms.maps.model.LatLng;
+
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
+import java.util.HashMap;
 
 /**
  * Created by morganebridges on 6/4/16.
@@ -16,6 +21,7 @@ public class Zombie {
     long id;
     boolean alive;
     Location location;
+
 
     boolean underAttack;
 
@@ -58,5 +64,9 @@ public class Zombie {
 
     public void setUnderAttack(boolean underAttack) {
         this.underAttack = underAttack;
+    }
+
+    public String toString(){
+        return ReflectionToStringBuilder.toString(this);
     }
 }

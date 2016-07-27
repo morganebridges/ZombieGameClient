@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    buildToolsVersion '23.0.3'
 
     dexOptions {
         javaMaxHeapSize "2g"
@@ -41,24 +41,16 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-
     // Android 1st party libs
-
     //Included so that we can make use of rest templates and consume from Spring.
     //compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.3.6'
-
     //Retrofit & OKHttp
-
     //Reactive Java
-
     // GCM/Firebase/Play Services libs
-
     // testing libs
     androidTestCompile 'org.testng:testng:6.9.6'
     androidTestCompile 'com.google.guava:guava:18.0'
     testCompile 'junit:junit:4.12'
-
-
     compile 'com.google.maps.android:android-maps-utils:0.4.+'
     compile 'com.android.support:appcompat-v7:24.1.0'
     compile 'com.android.support:design:24.1.0'
@@ -76,6 +68,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-maps:9.2.1'
     compile 'com.google.android.gms:play-services:9.2.1'
     compile 'com.google.android.gms:play-services-ads:9.2.1'
+    compile 'org.apache.commons:commons-lang3:3.0'
 }
 //Section for plugins to apply:
 apply plugin: 'com.google.gms.google-services'

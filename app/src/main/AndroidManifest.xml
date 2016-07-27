@@ -89,8 +89,7 @@
         <activity
             android:name=".MainMapActivity"
             android:label="@string/title_activity_main_map"
-            android:screenOrientation="portrait"
-            />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".LoginActivityFinal"
             android:label="@string/title_activity_login_activity_final" >
@@ -107,7 +106,6 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-
     </application>
 
 </manifest>
